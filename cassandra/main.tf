@@ -56,6 +56,7 @@ resource "aws_ebs_volume" "cassandra" {
   count             = "${length(var.private_ips)}"
   availability_zone = "${var.aws_avail_zone}"
   size              = "${var.aws_ebs_volume_size}"
+  type              = "gp2"
 }
 
 resource "aws_volume_attachment" "cassandra" {
