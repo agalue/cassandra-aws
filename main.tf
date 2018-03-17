@@ -11,7 +11,7 @@ module "cassandra1" {
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 1"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
-  cluster_name        = "OpenNMS"
+  cluster_name        = "Cassandra-Prod"
   datacenter          = "Houston"
   rack                = "Rack1"
   seed_name           = "${var.settings["cassandra_seed"]}"
@@ -34,7 +34,7 @@ module "cassandra2" {
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 2"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
-  cluster_name        = "OpenNMS"
+  cluster_name        = "Cassandra-Prod"
   datacenter          = "Houston"
   rack                = "Rack2"
   seed_name           = "${var.settings["cassandra_seed"]}"
@@ -57,7 +57,7 @@ module "cassandra3" {
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 3"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
-  cluster_name        = "OpenNMS"
+  cluster_name        = "Cassandra-Prod"
   datacenter          = "Houston"
   rack                = "Rack3"
   seed_name           = "${var.settings["cassandra_seed"]}"
@@ -80,7 +80,7 @@ module "cassandra4" {
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 4"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
-  cluster_name        = "OpenNMS"
+  cluster_name        = "Cassandra-Prod"
   datacenter          = "Houston"
   rack                = "Rack4"
   seed_name           = "${var.settings["cassandra_seed"]}"
