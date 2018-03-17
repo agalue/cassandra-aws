@@ -41,7 +41,7 @@ resource "aws_instance" "cassandra" {
 }
 
 resource "aws_network_interface" "cassandra" {
-  count           = "${length(var.private_ips) - 1}"
+  count           = "${length(var.private_ips)-1}"
   subnet_id       = "${var.aws_subnet_id}"
   private_ips     = ["${var.private_ips[count.index+1]}"]
   security_groups = ["${var.aws_security_groups}"]
@@ -50,6 +50,10 @@ resource "aws_network_interface" "cassandra" {
     instance     = "${aws_instance.cassandra.id}"
     device_index = "${count.index+1}"
   }
+
+  tags {
+    Name = "${var.aws_tag_name} NIC ${count.index+1}"
+  }
 }
 
 resource "aws_ebs_volume" "cassandra" {
@@ -57,6 +61,10 @@ resource "aws_ebs_volume" "cassandra" {
   availability_zone = "${var.aws_avail_zone}"
   size              = "${var.aws_ebs_volume_size}"
   type              = "gp2"
+
+  tags {
+    Name = "${var.aws_tag_name} Volume ${count.index+1}"
+  }
 }
 
 resource "aws_volume_attachment" "cassandra" {
