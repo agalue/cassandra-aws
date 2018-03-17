@@ -1,0 +1,11 @@
+# Compiled files
+*.tfstate
+*.tfstate.backup
+.terraform.tfstate.lock.info
+
+# Module directory
+.terraform/
+
+# Vagrant files
+resources/minion/.vagrant
+resources/minion/hosts
