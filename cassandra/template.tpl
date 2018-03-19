@@ -88,6 +88,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+Type=forking
 User=cassandra
 Group=cassandra
 
@@ -95,18 +96,21 @@ Environment="CASSANDRA_HOME=/usr/share/cassandra"
 Environment="CASSANDRA_CONF=/etc/cassandra/%i"
 Environment="PID_FILE=/var/run/cassandra-%i.pid"
 
-ExecStart=/usr/sbin/cassandra -f -p $${PID_FILE}
-StandardOutput=journal
-StandardError=journal
+ExecStart=/usr/sbin/cassandra -p $${PID_FILE}
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cassandra-%i
 LimitNOFILE=100000
 LimitMEMLOCK=infinity
 LimitNPROC=32768
 LimitAS=infinity
-Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+rsyslog_file=/etc/rsyslog.d/cassandra.conf
+rm -f $rsyslog_file
 
 echo "### Configuring Cassandra per Instance..."
 
@@ -149,17 +153,20 @@ do
   # Cassandra logs
   sed -r -i "s|.cassandra.logdir.|{cassandra.logdir}/node$i|" $log_file
 
-  # Make sure that CASSANDRA_CONF is not overriden
-  infile=/usr/share/cassandra/cassandra.in.sh 
-  sed -r -i 's/^CASSANDRA_CONF/#CASSANDRA_CONF/' $infile 
-  echo 'if [ -z "$CASSANDRA_CONF" ]; then
-    CASSANDRA_CONF=/etc/cassandra/conf
-fi' | cat - $infile > /tmp/_temp && mv /tmp/_temp $infile
-
   # Configure DC/Rack options
   sed -r -i "s/dc1/${datacenter}/" $rackdc_file
   sed -r -i "s/rack1/${rack}/" $rackdc_file
+
+  # Configure rsyslog
+  echo "if \$programname == 'cassandra-node$i' then /var/log/cassandra/node$i/cassandra.log" >> $rsyslog_file
 done
+
+# Make sure that CASSANDRA_CONF is not overriden
+infile=/usr/share/cassandra/cassandra.in.sh 
+sed -r -i 's/^CASSANDRA_CONF/#CASSANDRA_CONF/' $infile 
+echo 'if [ -z "$CASSANDRA_CONF" ]; then
+  CASSANDRA_CONF=/etc/cassandra/conf
+fi' | cat - $infile > /tmp/_temp && mv /tmp/_temp $infile
 
 echo "### Configuring Common JMX..."
 
@@ -187,7 +194,8 @@ chown cassandra:cassandra $jmx_access
 echo "### Enabling and starting Cassandra instances..."
 
 sleep ${startup_delay}
-sudo systemctl daemon-reload
+systemctl daemon-reload
+systemctl restart rsyslog
 for i in `seq 1 $num_instances`
 do
   systemctl enable cassandra3@node$i
