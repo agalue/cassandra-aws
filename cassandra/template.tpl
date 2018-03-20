@@ -200,5 +200,5 @@ for i in `seq 1 $num_instances`
 do
   systemctl enable cassandra3@node$i
   systemctl start cassandra3@node$i
-  sleep 60
+  sleep 45
 done

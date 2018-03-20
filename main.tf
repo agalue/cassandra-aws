@@ -17,6 +17,7 @@ module "cassandra1" {
   seed_name           = "${var.settings["cassandra_seed"]}"
   private_ips         = "${var.cassandra_ip_addresses[0]}"
   heap_size           = "${var.settings["cassandra_instance_heap_size"]}"
+  startup_delay       = "0"
 }
 
 output "cassandra1" {
@@ -40,6 +41,7 @@ module "cassandra2" {
   seed_name           = "${var.settings["cassandra_seed"]}"
   private_ips         = "${var.cassandra_ip_addresses[1]}"
   heap_size           = "${var.settings["cassandra_instance_heap_size"]}"
+  startup_delay       = "180"
 }
 
 output "cassandra2" {
@@ -63,6 +65,7 @@ module "cassandra3" {
   seed_name           = "${var.settings["cassandra_seed"]}"
   private_ips         = "${var.cassandra_ip_addresses[2]}"
   heap_size           = "${var.settings["cassandra_instance_heap_size"]}"
+  startup_delay       = "360"
 }
 
 output "cassandra3" {
@@ -86,6 +89,7 @@ module "cassandra4" {
   seed_name           = "${var.settings["cassandra_seed"]}"
   private_ips         = "${var.cassandra_ip_addresses[3]}"
   heap_size           = "${var.settings["cassandra_instance_heap_size"]}"
+  startup_delay       = "540"
 }
 
 output "cassandra4" {
