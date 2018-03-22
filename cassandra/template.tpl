@@ -143,8 +143,8 @@ do
   sed -r -i "s|/var/lib/cassandra/data|$data_dir/data|" $conf_file
 
   # Cassandra Tuning
-  sed -r -i "s|^[# ]*?concurrent_compactors: .*|concurrent_compactors: 8|" $conf_file
-  sed -r -i "s|^[# ]*?commitlog_total_space_in_mb: .*|commitlog_total_space_in_mb: 1024|" $conf_file
+  sed -r -i "s|^[# ]*?concurrent_compactors: .*|concurrent_compactors: 32|" $conf_file
+  sed -r -i "s|^[# ]*?commitlog_total_space_in_mb: .*|commitlog_total_space_in_mb: 2048|" $conf_file
 
   # Cassandra Environment
   sed -r -i "/rmi.server.hostname/s/^\#//" $env_file
