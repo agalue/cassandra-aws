@@ -123,6 +123,8 @@ do
   log_dir=$log_location/node$i
   conf_file=$conf_dir/cassandra.yaml
   env_file=$conf_dir/cassandra-env.sh
+  jvm_file=$conf_dir/jvm.options
+
   log_file=$conf_dir/logback.xml
   rackdc_file=$conf_dir/cassandra-rackdc.properties
 
@@ -140,6 +142,10 @@ do
   sed -r -i "s|saved_caches_directory: .*|saved_caches_directory: $data_dir/saved_caches|" $conf_file
   sed -r -i "s|/var/lib/cassandra/data|$data_dir/data|" $conf_file
 
+  # Cassandra Tuning
+  sed -r -i "s|^[# ]*?concurrent_compactors: .*|concurrent_compactors: 8|" $conf_file
+  sed -r -i "s|^[# ]*?commitlog_total_space_in_mb: .*|commitlog_total_space_in_mb: 1024|" $conf_file
+
   # Cassandra Environment
   sed -r -i "/rmi.server.hostname/s/^\#//" $env_file
   sed -r -i "/rmi.server.hostname/s/.public name./$ip/" $env_file
@@ -149,6 +155,26 @@ do
   sed -r -i "s|-Xloggc:.*.log|-Xloggc:$log_dir/gc.log|" $env_file
   sed -r -i "s/^[#]?MAX_HEAP_SIZE=\".*\"/MAX_HEAP_SIZE=\"${heap_size}m\"/" $env_file
   sed -r -i "s/^[#]?HEAP_NEWSIZE=\".*\"/HEAP_NEWSIZE=\"${heap_size}m\"/" $env_file
+
+  # Disable CMSGC
+  sed -r -i "/UseParNewGC/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/UseConcMarkSweepGC/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSParallelRemarkEnabled/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/SurvivorRatio/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/MaxTenuringThreshold/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSInitiatingOccupancyFraction/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/UseCMSInitiatingOccupancyOnly/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSWaitDuration/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSParallelInitialMarkEnabled/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSEdenChunksRecordAlways/s/-XX/#-XX/" $jvm_file
+  sed -r -i "/CMSClassUnloadingEnabled/s/-XX/#-XX/" $jvm_file
+
+  # Enable G1GC
+  sed -r -i "/UseG1GC/s/#-XX/-XX/" $jvm_file
+  sed -r -i "/G1RSetUpdatingPauseTimePercent/s/#-XX/-XX/" $jvm_file
+  sed -r -i "/MaxGCPauseMillis/s/#-XX/-XX/" $jvm_file
+  sed -r -i "/InitiatingHeapOccupancyPercent/s/#-XX/-XX/" $jvm_file
+  sed -r -i "/ParallelGCThreads/s/#-XX/-XX/" $jvm_file
 
   # Cassandra logs
   sed -r -i "s|.cassandra.logdir.|{cassandra.logdir}/node$i|" $log_file
