@@ -7,7 +7,7 @@ module "cassandra1" {
   aws_avail_zone      = "${data.aws_availability_zones.available.names[0]}"
   aws_subnet_id       = "${aws_subnet.public.id}"
   aws_key_name        = "${var.aws_key_name}"
-  aws_ebs_volume_size = "60"
+  aws_ebs_volume_size = "${var.settings["cassandra_volume_size"]}"
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 1"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
@@ -28,7 +28,7 @@ module "cassandra2" {
   aws_avail_zone      = "${data.aws_availability_zones.available.names[0]}"
   aws_subnet_id       = "${aws_subnet.public.id}"
   aws_key_name        = "${var.aws_key_name}"
-  aws_ebs_volume_size = "60"
+  aws_ebs_volume_size = "${var.settings["cassandra_volume_size"]}"
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 2"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
@@ -49,7 +49,7 @@ module "cassandra3" {
   aws_avail_zone      = "${data.aws_availability_zones.available.names[0]}"
   aws_subnet_id       = "${aws_subnet.public.id}"
   aws_key_name        = "${var.aws_key_name}"
-  aws_ebs_volume_size = "60"
+  aws_ebs_volume_size = "${var.settings["cassandra_volume_size"]}"
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 3"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]
@@ -70,7 +70,7 @@ module "cassandra4" {
   aws_avail_zone      = "${data.aws_availability_zones.available.names[0]}"
   aws_subnet_id       = "${aws_subnet.public.id}"
   aws_key_name        = "${var.aws_key_name}"
-  aws_ebs_volume_size = "60"
+  aws_ebs_volume_size = "${var.settings["cassandra_volume_size"]}"
   aws_private_key     = "${var.aws_private_key}"
   aws_tag_name        = "Terraform Cassandra 4"
   aws_security_groups = ["${aws_security_group.common.id}", "${aws_security_group.cassandra.id}"]

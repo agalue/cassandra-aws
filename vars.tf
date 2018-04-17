@@ -61,6 +61,7 @@ variable "settings" {
     cassandra_seed               = "172.17.1.21"
     cassandra_datacenter_name    = "Main"
     cassandra_cluster_name       = "Production"
+    cassandra_volume_size        = 100
     cassandra_instance_heap_size = 16384
   }
 }
