@@ -17,7 +17,7 @@ variable "aws_private_key" {
 
 variable "aws_region" {
   description = "EC2 Region for the VPC"
-  default     = "us-west-2"              # For testing purposes only
+  default     = "us-east-2"              # For testing purposes only
 }
 
 data "aws_ami" "cassandra" {
@@ -56,9 +56,11 @@ variable "settings" {
   type        = "map"
 
   default = {
-    cassandra_instance_type      = "t2.2xlarge"
+    cassandra_instance_type      = "m4.10xlarge"
     cassandra_cluster_name       = "Cassandra-Cluster"
     cassandra_seed               = "172.17.1.21"
-    cassandra_instance_heap_size = 8192
+    cassandra_datacenter_name    = "Main"
+    cassandra_cluster_name       = "Production"
+    cassandra_instance_heap_size = 16384
   }
 }

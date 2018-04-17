@@ -1,21 +1,26 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
-# Warning: This is intended to be used through Terraform's template plugin only
 
 # AWS Template Variables
-# - cluster_name = ${cluster_name}
-# - datacenter = ${datacenter}
-# - rack = ${rack}
-# - seed_name = ${seed_name}
-# - private_ips = ${private_ips}
-# - heap_size = ${heap_size}
-# - startup_delay = ${startup_delay}
-# - device_names = ${device_names}
 
-IFS=',' read -r -a ip_list <<< "${private_ips}"
-IFS=',' read -r -a device_list <<< "${device_names}"
+hostname=${hostname}
+cluster_name=${cluster_name}
+datacenter=${datacenter}
+rack=${rack}
+seed_name=${seed_name}
+private_ips=${private_ips}
+heap_size=${heap_size}
+startup_delay=${startup_delay}
+instance_delay=${instance_delay}
+device_names=${device_names}
+
+IFS=',' read -r -a ip_list <<< "$private_ips"
+IFS=',' read -r -a device_list <<< "$device_names"
 
 num_instances=$${#ip_list[@]}
+
+hostnamectl set-hostname --static $hostname
+echo "preserve_hostname: true" > /etc/cloud/cloud.cfg.d/99_hostname.cfg
 
 echo "### Configuring $num_instances Cassandra instances using the following IP Addresses:"
 
@@ -29,13 +34,11 @@ echo "### Configuring dedicated EBS disks..."
 cp /etc/fstab /etc/fstab.bak
 for i in `seq 1 $num_instances`
 do
-  aws_device=$${device_list[i-1]}
-  device_id=`echo $aws_device | sed 's/.*\/s/xv/'`
-  device=/dev/$device_id
-  echo "### Waiting on device $device_id..."
-  until lsblk | grep -m 1 "$device_id"; do
-    printf '.'
-    sleep 1
+  device=$${device_list[i-1]}
+  echo "### Waiting on device $device..."
+  while [ ! -e $device ]; do
+      printf '.'
+      sleep 10
   done
 
   echo "### Creating partition on $device..."
@@ -132,8 +135,8 @@ do
   rsync -ar $conf_src/ $conf_dir/
 
   # Cassandra Configuration
-  sed -r -i "/cluster_name/s/Test Cluster/${cluster_name}/" $conf_file
-  sed -r -i "/seeds/s/127.0.0.1/${seed_name}/" $conf_file
+  sed -r -i "/cluster_name/s/Test Cluster/$cluster_name/" $conf_file
+  sed -r -i "/seeds/s/127.0.0.1/$seed_name/" $conf_file
   sed -r -i "/listen_address/s/localhost/$ip/" $conf_file
   sed -r -i "/rpc_address/s/localhost/$ip/" $conf_file
   sed -r -i "/endpoint_snitch/s/SimpleSnitch/GossipingPropertyFileSnitch/" $conf_file
@@ -153,8 +156,8 @@ do
   sed -r -i "/LOCAL_JMX=/s/yes/no/" $env_file
   sed -r -i "/JMX_PORT/s/7199/7$${i}99/" $env_file
   sed -r -i "s|-Xloggc:.*.log|-Xloggc:$log_dir/gc.log|" $env_file
-  sed -r -i "s/^[#]?MAX_HEAP_SIZE=\".*\"/MAX_HEAP_SIZE=\"${heap_size}m\"/" $env_file
-  sed -r -i "s/^[#]?HEAP_NEWSIZE=\".*\"/HEAP_NEWSIZE=\"${heap_size}m\"/" $env_file
+  sed -r -i "s/^[#]?MAX_HEAP_SIZE=\".*\"/MAX_HEAP_SIZE=\"$${heap_size}m\"/" $env_file
+  sed -r -i "s/^[#]?HEAP_NEWSIZE=\".*\"/HEAP_NEWSIZE=\"$${heap_size}m\"/" $env_file
 
   # Disable CMSGC
   sed -r -i "/UseParNewGC/s/-XX/#-XX/" $jvm_file
@@ -180,8 +183,8 @@ do
   sed -r -i "s|.cassandra.logdir.|{cassandra.logdir}/node$i|" $log_file
 
   # Configure DC/Rack options
-  sed -r -i "s/dc1/${datacenter}/" $rackdc_file
-  sed -r -i "s/rack1/${rack}/" $rackdc_file
+  sed -r -i "s/dc1/$datacenter/" $rackdc_file
+  sed -r -i "s/rack1/$rack/" $rackdc_file
 
   # Configure rsyslog
   echo "if \$programname == 'cassandra-node$i' then /var/log/cassandra/node$i/cassandra.log" >> $rsyslog_file
@@ -219,12 +222,12 @@ chown cassandra:cassandra $jmx_access
 
 echo "### Enabling and starting Cassandra instances..."
 
-sleep ${startup_delay}
+sleep $startup_delay
 systemctl daemon-reload
 systemctl restart rsyslog
 for i in `seq 1 $num_instances`
 do
   systemctl enable cassandra3@node$i
   systemctl start cassandra3@node$i
-  sleep 45
+  sleep $instance_delay
 done

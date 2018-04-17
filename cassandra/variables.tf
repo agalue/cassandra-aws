@@ -48,6 +48,10 @@ variable "aws_ebs_device_names" {
   ]
 }
 
+variable "hostname" {
+  type = "string"
+}
+
 variable "cluster_name" {
   type = "string"
 }
@@ -75,4 +79,9 @@ variable "private_ips" {
 variable "startup_delay" {
   type    = "string"
   default = "0"
+}
+
+variable "instance_delay" {
+  type    = "string"
+  default = "40"
 }

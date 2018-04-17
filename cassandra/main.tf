@@ -2,14 +2,16 @@ data "template_file" "cassandra" {
   template = "${file("${path.module}/template.tpl")}"
 
   vars {
-    cluster_name  = "${var.cluster_name}"
-    datacenter    = "${var.datacenter}"
-    rack          = "${var.rack}"
-    seed_name     = "${var.seed_name}"
-    private_ips   = "${join(",", var.private_ips)}"
-    heap_size     = "${var.heap_size}"
-    startup_delay = "${var.startup_delay}"
-    device_names  = "${join(",",var.aws_ebs_device_names)}"
+    hostname       = "${var.hostname}"
+    cluster_name   = "${var.cluster_name}"
+    datacenter     = "${var.datacenter}"
+    rack           = "${var.rack}"
+    seed_name      = "${var.seed_name}"
+    private_ips    = "${join(",", var.private_ips)}"
+    heap_size      = "${var.heap_size}"
+    startup_delay  = "${var.startup_delay}"
+    instance_delay = "${var.instance_delay}"
+    device_names   = "${join(",",var.aws_ebs_device_names)}"
   }
 }
 
