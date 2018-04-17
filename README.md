@@ -34,11 +34,12 @@ aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 * Tweak the common settings on `vars.tf`, specially `aws_key_name` and `aws_private_key`, to match the chosen region. All the customizable settings are defined on `vars.tf`. Please do not change the other `.tf` files.
 
-* Build the custom AMI using Packer:
+* Build the custom AMIs using Packer:
 
 ```SHELL
 cd packer
 packer build cassandra.json
+packer build opennms.json
 ```
 
 * Execute the following commands from the repository's root directory (at the same level as the .tf files):
@@ -47,6 +48,35 @@ packer build cassandra.json
 terraform init
 terraform plan
 terraform apply
+```
+
+* Once the Cassandra cluster is ready, initalize the keyspace, from one of the cassandra servers:
+
+```SHELL
+cat <<EOF > ~/newts.cql
+CREATE KEYSPACE newts WITH replication = {'class' : 'NetworkTopologyStrategy', 'Main' : 3, 'DR': 3 };
+CREATE TABLE newts.samples (context text, partition int, resource text, collected_at timestamp, metric_name text, value blob, attributes map<text, text>,    PRIMARY KEY((context, partition, resource), collected_at, metric_name)) WITH compaction = { 'compaction_window_size': '7', 'compaction_window_unit': 'DAYS',  'expired_sstable_check_frequency_seconds': '86400', 'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy' } AND gc_grace_seconds = 604800 AND read_repair_chance = 0;
+CREATE TABLE newts.terms (context text, field text, value text, resource text, PRIMARY KEY((context, field, value), resource));
+CREATE TABLE newts.resource_attributes (context text, resource text, attribute text, value text, PRIMARY KEY((context, resource), attribute));
+CREATE TABLE newts.resource_metrics (context text, resource text, metric_name text, PRIMARY KEY((context, resource), metric_name));
+EOF
+cqlsh cassandra1 < ~/newts.cql
+```
+
+* Start OpenNMS
+
+* Import the test requisition, to collect JMX metrics from OpenNMS and one of the Cassandra servers.
+
+* Connect to the Karaf SSH Console
+
+```SHELL
+ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
+```
+
+* Execute the `metrics:stress` command. The following is an example to generate 100000 samples per second:
+
+```
+metrics:stress -r 60 -n 15000 -f 20 -g 10 -a 10 -s 1 -t 200 -i 300
 ```
 
 * Enjoy!

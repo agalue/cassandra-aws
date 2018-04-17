@@ -84,3 +84,35 @@ resource "aws_security_group" "cassandra" {
     Name = "Terraform Cassandra SG"
   }
 }
+
+resource "aws_security_group" "opennms" {
+  name        = "terraform-opennms-sg"
+  description = "Allow OpenNMS connections."
+
+  ingress {
+    from_port   = 8980
+    to_port     = 8980
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 18980
+    to_port     = 18980
+    protocol    = "tcp"
+    cidr_blocks = ["${var.vpc_cidr}"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = "${aws_vpc.default.id}"
+
+  tags {
+    Name = "Terraform OpenNMS Core SG"
+  }
+}

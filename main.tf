@@ -83,3 +83,47 @@ module "cassandra4" {
   heap_size           = "${var.settings["cassandra_instance_heap_size"]}"
   startup_delay       = "360"
 }
+
+data "template_file" "opennms" {
+  template = "${file("${path.module}/opennms.tpl")}"
+
+  vars {
+    hostname          = "opennms"
+    cassandra_server  = "${var.settings["cassandra_seed"]}"
+    heap_size         = "${var.settings["opennms_heap_size"]}"
+    cache_max_entries = "${var.settings["opennms_cache_max_entries"]}"
+    ring_buffer_size  = "${var.settings["opennms_ring_buffer_size"]}"
+  }
+}
+
+resource "aws_instance" "opennms" {
+  ami           = "${data.aws_ami.opennms.image_id}"
+  instance_type = "${var.settings["opennms_instance_type"]}"
+  subnet_id     = "${aws_subnet.public.id}"
+  key_name      = "${var.aws_key_name}"
+  private_ip    = "${var.settings["opennms_private_ip"]}"
+  user_data     = "${data.template_file.opennms.rendered}"
+
+  associate_public_ip_address = true
+
+  vpc_security_group_ids = [
+    "${aws_security_group.common.id}",
+    "${aws_security_group.opennms.id}",
+  ]
+
+  depends_on = [
+    "module.cassandra1",
+    "module.cassandra2",
+    "module.cassandra3",
+    "module.cassandra4",
+  ]
+
+  connection {
+    user        = "ec2-user"
+    private_key = "${file("${var.aws_private_key}")}"
+  }
+
+  tags {
+    Name = "Terraform OpenNMS Server"
+  }
+}

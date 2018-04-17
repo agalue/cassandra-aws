@@ -29,6 +29,15 @@ data "aws_ami" "cassandra" {
   }
 }
 
+data "aws_ami" "opennms" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["opennms-*"]
+  }
+}
+
 variable "vpc_cidr" {
   description = "CIDR for the whole VPC"
   default     = "172.17.0.0/16"
@@ -63,5 +72,11 @@ variable "settings" {
     cassandra_cluster_name       = "Production"
     cassandra_volume_size        = 100
     cassandra_instance_heap_size = 16384
+    cassandra_replication_factor = 3
+    opennms_instance_type        = "c5.9xlarge"
+    opennms_heap_size            = 24576
+    opennms_private_ip           = "172.17.1.100"
+    opennms_cache_max_entries    = 4000000
+    opennms_ring_buffer_size     = 2097152
   }
 }
