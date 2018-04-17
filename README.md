@@ -50,7 +50,48 @@ terraform plan
 terraform apply
 ```
 
-* Once the Cassandra cluster is ready, initalize the keyspace, from one of the cassandra servers:
+* Wait for the Cassandra cluster to be ready. Each Cassandra instances is added one at a time (as only one node at a time can be joining a cluster). Use `nodetool` to make sure all the 12 instances have joined the cluster:
+
+```SHELL
+nodetool -u cassandra -pw cassandra status
+```
+
+If there are missing instances, log into the appropriate Cassandra server and check which instances are running:
+
+```SHELL
+systemctl status cassandra3*
+```
+
+Let's say that the instance identified with `node2` is not running. Assuming that no other instance is joining the cluster, run the following:
+
+```SHELL
+systemctl start cassandra3@node2
+```
+
+Example of healthy status:
+
+```SHELL
+[ec2-user@cassandra01 ~]$ nodetool -u cassandra -pw cassandra status
+Datacenter: Main
+================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address      Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  172.17.1.33  69.92 KiB  256          16.3%             6e81946d-71fa-4543-ac09-fea0362f9799  Rack2
+UN  172.17.1.32  69.94 KiB  256          17.1%             b208f75c-255c-467d-89d1-b0a90a3f2d22  Rack2
+UN  172.17.1.51  69.94 KiB  256          17.4%             41caa47b-61fa-4e54-a5a5-fe4d2dc4bb6c  Rack4
+UN  172.17.1.21  108.65 KiB  256          16.6%             dcbfd31b-62a6-4629-8c1b-ba9150aff59d  Rack1
+UN  172.17.1.53  69.89 KiB  256          15.8%             52acbe92-fff1-4c4f-b952-cf4f20930de6  Rack4
+UN  172.17.1.52  92.77 KiB  256          16.3%             09eeeb3d-023e-44ea-9bc6-17bc28fb75f6  Rack4
+UN  172.17.1.23  74.99 KiB  256          17.3%             d1eea34f-24a3-4f37-b8f4-6f86e9807710  Rack1
+UN  172.17.1.22  93.95 KiB  256          16.1%             970d8eab-0479-4157-bfdb-20bdffee27e0  Rack1
+UN  172.17.1.41  69.95 KiB  256          17.4%             b1eb7d96-4f83-4aca-9b42-83fa44650b8c  Rack3
+UN  172.17.1.43  69.86 KiB  256          16.6%             d9527cb8-1f56-425d-854b-a13e38bef41e  Rack3
+UN  172.17.1.42  114.72 KiB  256          17.2%             3544f267-e72e-4637-a5b4-6bd1d8fed0bb  Rack3
+UN  172.17.1.31  69.92 KiB  256          15.9%             7d1f6f39-f666-47fa-8adb-60d05b146d17  Rack2
+```
+
+* Initalize the keyspace, from one of the cassandra servers:
 
 ```SHELL
 cat <<EOF > ~/newts.cql
@@ -60,23 +101,35 @@ CREATE TABLE newts.terms (context text, field text, value text, resource text, P
 CREATE TABLE newts.resource_attributes (context text, resource text, attribute text, value text, PRIMARY KEY((context, resource), attribute));
 CREATE TABLE newts.resource_metrics (context text, resource text, metric_name text, PRIMARY KEY((context, resource), metric_name));
 EOF
-cqlsh cassandra1 < ~/newts.cql
+cqlsh `hostname` < ~/newts.cql
 ```
 
 * Start OpenNMS
 
-* Import the test requisition, to collect JMX metrics from OpenNMS and one of the Cassandra servers.
+```SHELL
+[root@opennms ~]# systemctl start opennms
+```
+
+* Import the test requisition called AWS, to collect JMX metrics from OpenNMS and one of the Cassandra servers every 30 seconds.
+
+```SHELL
+[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import AWS
+```
 
 * Connect to the Karaf SSH Console
 
 ```SHELL
-ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
+[root@opennms ~]# ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
 ```
+
+Make sure it is running at least Karaf 4.1.5.
 
 * Execute the `metrics:stress` command. The following is an example to generate 100000 samples per second:
 
 ```
 metrics:stress -r 60 -n 15000 -f 20 -g 10 -a 10 -s 1 -t 200 -i 300
 ```
+
+* Check the OpenNMS performance graphs to understand how it behaves.
 
 * Enjoy!
