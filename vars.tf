@@ -34,7 +34,7 @@ data "aws_ami" "opennms" {
 
   filter {
     name   = "name"
-    values = ["opennms-*"]
+    values = ["horizon-*"]
   }
 }
 
@@ -77,6 +77,6 @@ variable "settings" {
     opennms_heap_size            = 24576
     opennms_private_ip           = "172.17.1.100"
     opennms_cache_max_entries    = 4000000
-    opennms_ring_buffer_size     = 2097152
+    opennms_ring_buffer_size     = 4194304
   }
 }

@@ -10,7 +10,7 @@
       "source_ami": "{{ user `source_ami` }}",
       "instance_type": "t2.medium",
       "ssh_username": "ec2-user",
-      "ami_name": "opennms-{{timestamp}}"
+      "ami_name": "horizon-{{timestamp}}"
     }
   ],
   "provisioners": [
