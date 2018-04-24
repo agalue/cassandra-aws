@@ -220,13 +220,17 @@ EOF
 chmod 0400 $jmx_access
 chown cassandra:cassandra $jmx_access
 
-echo "### Enabling and starting Cassandra instances..."
+echo "### Waiting to start Cassandra instances..."
 
 sleep $startup_delay
+
+echo "### Enabling and starting Cassandra instances..."
+
 systemctl daemon-reload
 systemctl restart rsyslog
 for i in `seq 1 $num_instances`
 do
+  echo "### Starting instance $i..."
   systemctl enable cassandra3@node$i
   systemctl start cassandra3@node$i
   sleep $instance_delay

@@ -83,5 +83,5 @@ variable "startup_delay" {
 
 variable "instance_delay" {
   type    = "string"
-  default = "40"
+  default = "45"
 }
