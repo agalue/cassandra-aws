@@ -133,3 +133,5 @@ metrics:stress -r 60 -n 15000 -f 20 -g 10 -a 10 -s 1 -t 200 -i 300
 * Check the OpenNMS performance graphs to understand how it behaves.
 
 * Enjoy!
+
+It seems like terraform has some dependency issues when destroying the lab using modules, so I have to manually terminate the instances prior running `terraform destoy`; otherwise it stays forever waiting on destroying the internet gateway without even trying to shutdown the resources created inside the modules.
