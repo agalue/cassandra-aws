@@ -104,16 +104,19 @@ EOF
 cqlsh `hostname` < ~/newts.cql
 ```
 
+* Copy over the content of `resources/config` to the OpenNMS server, to override the poller and collector configuration, as well as creating custom requistions for Cassandra and OpenNMS, including the foreign source definitions.
+
 * Start OpenNMS
 
 ```SHELL
 [root@opennms ~]# systemctl start opennms
 ```
 
-* Import the test requisition called AWS, to collect JMX metrics from OpenNMS and one of the Cassandra servers every 30 seconds.
+* Import the requisitions, to collect JMX metrics from OpenNMS and one of the Cassandra servers every 30 seconds.
 
 ```SHELL
-[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import AWS
+[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import Cassandra
+[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import OpenNMS
 ```
 
 * Connect to the Karaf SSH Console

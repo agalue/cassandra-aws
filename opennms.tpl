@@ -146,36 +146,6 @@ acknowledged-by=admin
 acknowledged-at=Mon Jan 01 00\:00\:00 EDT 2018
 EOF
 
-echo "Creating the default requisition..."
-mkdir -p $opennms_etc/imports/pending
-cat <<EOF > $opennms_etc/imports/pending/AWS.xml
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2017-01-01T00:00:00.000-05:00" foreign-source="AWS">
-   <node building="AWS" foreign-id="opennms-server" node-label="opennms-server">
-      <interface descr="eth0" ip-addr="127.0.0.1" status="1" snmp-primary="P">
-         <monitored-service service-name="OpenNMS-JVM"/>
-      </interface>
-   </node>
-   <node building="AWS" foreign-id="cassandra1" node-label="cassandra1">
-      <interface descr="eth0" ip-addr="$cassandra_server" status="1" snmp-primary="P">
-         <monitored-service service-name="JMX-Cassandra"/>
-         <monitored-service service-name="JMX-Cassandra-Newts"/>
-      </interface>
-   </node>
-</model-import>
-EOF
-mkdir -p $opennms_etc/foreign-sources/pending
-cat <<EOF > $opennms_etc/foreign-sources/pending/AWS.xml
-<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="AWS" date-stamp="2017-01-01T00:00:00.000-05:00">
-   <scan-interval>1d</scan-interval>
-   <detectors>
-      <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector"/>
-      <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
-   </detectors>
-   <policies/>
-</foreign-source>
-EOF
-
 echo "### Running OpenNMS install script..."
 
 $opennms_home/bin/runjava -S /usr/java/latest/bin/java

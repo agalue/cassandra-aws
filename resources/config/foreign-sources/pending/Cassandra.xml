@@ -1,0 +1,15 @@
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="Cassandra" date-stamp="2018-04-01T11:00:00.000-04:00">
+   <scan-interval>1d</scan-interval>
+   <detectors/>
+   <policies>
+      <policy name="NoDiscoveredIPs" class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy">
+         <parameter key="action" value="DO_NOT_PERSIST"/>
+         <parameter key="matchBehavior" value="NO_PARAMETERS"/>
+      </policy>
+      <policy name="DataCollection" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+         <parameter key="action" value="ENABLE_COLLECTION"/>
+         <parameter key="matchBehavior" value="ANY_PARAMETER"/>
+         <parameter key="ifOperStatus" value="1"/>
+      </policy>
+   </policies>
+</foreign-source>

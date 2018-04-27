@@ -1,0 +1,66 @@
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2018-04-01T11:00:00.000-04:00" foreign-source="Cassandra">
+  <node building="us-east-2" foreign-id="cassandra1" node-label="cassandra-01-server">
+    <interface descr="eth0" ip-addr="172.17.1.21" status="1" snmp-primary="P">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="JMX-Cassandra-I1"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
+    </interface>
+    <interface descr="eth1" ip-addr="172.17.1.22" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I2"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I2"/>
+    </interface>
+    <interface descr="eth2" ip-addr="172.17.1.23" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I3"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I3"/>
+    </interface>
+  </node>
+  <node building="us-east-2" foreign-id="cassandra2" node-label="cassandra-02-server">
+    <interface descr="eth0" ip-addr="172.17.1.31" status="1" snmp-primary="P">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="JMX-Cassandra-I1"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
+    </interface>
+    <interface descr="eth1" ip-addr="172.17.1.32" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I2"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I2"/>
+    </interface>
+    <interface descr="eth2" ip-addr="172.17.1.33" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I3"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I3"/>
+    </interface>
+  </node>
+  <node building="us-east-2" foreign-id="cassandra3" node-label="cassandra-03-server">
+    <interface descr="eth0" ip-addr="172.17.1.41" status="1" snmp-primary="P">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="JMX-Cassandra-I1"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
+    </interface>
+    <interface descr="eth1" ip-addr="172.17.1.42" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I2"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I2"/>
+    </interface>
+    <interface descr="eth2" ip-addr="172.17.1.43" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I3"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I3"/>
+    </interface>
+  </node>
+  <node building="us-east-2" foreign-id="cassandra4" node-label="cassandra-04-server">
+    <interface descr="eth0" ip-addr="172.17.1.51" status="1" snmp-primary="P">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="JMX-Cassandra-I1"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
+    </interface>
+    <interface descr="eth1" ip-addr="172.17.1.52" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I2"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I2"/>
+    </interface>
+    <interface descr="eth2" ip-addr="172.17.1.53" status="1" snmp-primary="N">
+      <monitored-service service-name="JMX-Cassandra-I3"/>
+      <monitored-service service-name="JMX-Cassandra-Newts-I3"/>
+    </interface>
+  </node>
+</model-import>

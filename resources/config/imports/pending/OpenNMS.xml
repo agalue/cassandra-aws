@@ -1,0 +1,12 @@
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2018-04-01T11:00:00.000-04:00" foreign-source="OpenNMS">
+  <node building="us-east-2" foreign-id="opennms" node-label="opennms-server">
+    <interface descr="eth0" ip-addr="172.17.1.100" status="1" snmp-primary="P">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="SNMP"/>
+    </interface>
+    <interface descr="loopback" ip-addr="127.0.0.1" status="1" snmp-primary="N">
+      <monitored-service service-name="OpenNMS-JVM"/>
+      <monitored-service service-name="PostgreSQL"/>
+    </interface>
+  </node>
+</model-import>
