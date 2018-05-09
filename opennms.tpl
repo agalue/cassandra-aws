@@ -109,6 +109,7 @@ org.opennms.newts.query.heartbeat=45000
 org.opennms.newts.config.ring_buffer_size=$ring_buffer_size
 org.opennms.newts.config.cache.max_entries=$cache_max_entries
 org.opennms.newts.config.writer_threads=$num_of_cores
+org.opennms.newts.config.cache.priming.enable=true
 org.opennms.newts.config.cache.priming.block_ms=-1
 EOF
 sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/poller-configuration.xml 

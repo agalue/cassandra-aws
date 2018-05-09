@@ -109,10 +109,9 @@
       <downtime begin="43200000" end="432000000" interval="600000"/><!-- 10m, 12h, 5d -->
       <downtime begin="432000000" interval="3600000"/><!-- 1h, 5d -->
    </package>
-   <package name="example1">
+   <package name="main">
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="254.254.254.254"/>
-      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
       <rrd step="30">
          <rra>RRA:AVERAGE:0.5:1:2016</rra>
          <rra>RRA:AVERAGE:0.5:12:1488</rra>
@@ -136,14 +135,6 @@
          <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
          <parameter key="rrd-base-name" value="dns"/>
          <parameter key="ds-name" value="dns"/>
-      </service>
-      <service name="Elasticsearch" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="1"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="port" value="9200"/>
-         <parameter key="url" value="/_cluster/stats"/>
-         <parameter key="response" value="200-202,299"/>
-         <parameter key="response-text" value="~.*status.:.green.*"/>
       </service>
       <service name="SMTP" interval="30000" user-defined="false" status="on">
          <parameter key="retry" value="1"/>
@@ -199,28 +190,6 @@
          <parameter key="rrd-base-name" value="https"/>
          <parameter key="ds-name" value="https"/>
       </service>
-      <service name="HypericAgent" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="1"/>
-         <parameter key="timeout" value="2200"/>
-         <parameter key="port" value="2144"/>
-      </service>
-      <service name="HypericHQ" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="1"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-         <parameter key="rrd-base-name" value="hyperic-hq"/>
-         <parameter key="ds-name" value="hyperic-hq"/>
-         <parameter key="page-sequence">
-            <page-sequence xmlns="">
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns=""/>
-               <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns="">
-                  <parameter key="j_username" value="hqadmin" xmlns=""/>
-                  <parameter key="j_password" value="hqadmin" xmlns=""/>
-               </page>
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" xmlns=""/>
-            </page-sequence>
-         </parameter>
-      </service>
       <service name="MySQL" interval="30000" user-defined="false" status="on">
          <parameter key="retry" value="1"/>
          <parameter key="timeout" value="3000"/>
@@ -267,74 +236,11 @@
          <parameter key="rrd-base-name" value="pop3"/>
          <parameter key="ds-name" value="pop3"/>
       </service>
-      <service name="NRPE" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="3"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="port" value="5666"/>
-         <parameter key="command" value="_NRPE_CHECK"/>
-         <parameter key="padding" value="2"/>
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-         <parameter key="ds-name" value="nrpe"/>
-      </service>
-      <service name="NRPE-NoSSL" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="3"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="port" value="5666"/>
-         <parameter key="command" value="_NRPE_CHECK"/>
-         <parameter key="usessl" value="false"/>
-         <parameter key="padding" value="2"/>
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-         <parameter key="ds-name" value="nrpe"/>
-      </service>
-      <service name="Windows-Task-Scheduler" interval="30000" user-defined="false" status="on">
-         <parameter key="service-name" value="Task Scheduler"/>
-      </service>
       <service name="OpenNMS-JVM" interval="30000" user-defined="false" status="on">
          <parameter key="port" value="18980"/>
          <parameter key="retry" value="2"/>
          <parameter key="timeout" value="3000"/>
          <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-      </service>
-      <service name="JMX-Minion" interval="30000" user-defined="false" status="on">
-         <parameter key="port" value="18980"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-         <parameter key="ds-name" value="jmx-minion"/>
-         <parameter key="use-foreign-id-as-system-id" value="true"/>
-      </service>
-      <service name="JMX-Kafka" interval="30000" user-defined="false" status="on">
-         <parameter key="port" value="9999"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
-         <parameter key="username" value="admin"/>
-         <parameter key="password" value="admin"/>
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-      </service>
-      <service name="VMwareCim-HostSystem" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="ignoreStandBy" value="false"/>
-      </service>
-      <service name="VMware-ManagedEntity" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="ignoreStandBy" value="false"/>
-      </service>
-      <service name="MS-RDP" interval="30000" user-defined="false" status="on">
-         <parameter key="retry" value="1"/>
-         <parameter key="banner" value="*"/>
-         <parameter key="port" value="3389"/>
-         <parameter key="timeout" value="3000"/>
-      </service>
-      <service name="Minion-Heartbeat" interval="30000" user-defined="false" status="on">
-         <parameter key="period" value="30000"/><!-- Service interval should be same as period -->
-      </service>
-      <service name="Minion-RPC" interval="30000" user-defined="false" status="on">
-         <parameter key="ttl" value="30000"/><!-- TTL should be same as period -->
-         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
-         <parameter key="ds-name" value="minion-rpc"/>
       </service>
       <downtime begin="0" end="300000" interval="30000"/><!-- 30s, 0, 5m -->
       <downtime begin="300000" end="43200000" interval="300000"/><!-- 5m, 5m, 12h -->
@@ -365,7 +271,9 @@
          <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
          <parameter key="rrd-base-name" value="strafeping"/>
       </service>
-      <downtime begin="0" end="432000000" interval="300000"/><!-- 5m, 0, 5d -->
+      <downtime begin="0" end="300000" interval="30000"/><!-- 30s, 0, 5m -->
+      <downtime begin="300000" end="43200000" interval="300000"/><!-- 5m, 5m, 12h -->
+      <downtime begin="43200000" end="432000000" interval="600000"/><!-- 10m, 12h, 5d -->
       <downtime begin="432000000" interval="3600000"/><!-- 1h, 5d -->
    </package>
    <monitor service="JMX-Cassandra-I1" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
@@ -380,29 +288,16 @@
    <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
    <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
    <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor"/>
-   <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
    <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor"/>
    <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor"/>
-   <monitor service="Elasticsearch" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
    <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
    <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
    <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="PostgreSQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
-   <monitor service="Minion-Heartbeat" class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor"/>
-   <monitor service="Minion-RPC" class-name="org.opennms.netmgt.poller.monitors.MinionRpcMonitor"/>
    <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
    <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
    <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
    <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
-   <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
-   <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
-   <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor"/>
    <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="JMX-Minion" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="JMX-Kafka" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor"/>
-   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
-   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
-   <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 </poller-configuration>

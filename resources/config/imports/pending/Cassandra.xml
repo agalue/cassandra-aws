@@ -3,6 +3,7 @@
     <interface descr="eth0" ip-addr="172.17.1.21" status="1" snmp-primary="P">
       <monitored-service service-name="ICMP"/>
       <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="StrafePing"/>
       <monitored-service service-name="JMX-Cassandra-I1"/>
       <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
     </interface>
@@ -19,6 +20,7 @@
     <interface descr="eth0" ip-addr="172.17.1.31" status="1" snmp-primary="P">
       <monitored-service service-name="ICMP"/>
       <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="StrafePing"/>
       <monitored-service service-name="JMX-Cassandra-I1"/>
       <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
     </interface>
@@ -35,6 +37,7 @@
     <interface descr="eth0" ip-addr="172.17.1.41" status="1" snmp-primary="P">
       <monitored-service service-name="ICMP"/>
       <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="StrafePing"/>
       <monitored-service service-name="JMX-Cassandra-I1"/>
       <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
     </interface>
@@ -51,6 +54,7 @@
     <interface descr="eth0" ip-addr="172.17.1.51" status="1" snmp-primary="P">
       <monitored-service service-name="ICMP"/>
       <monitored-service service-name="SNMP"/>
+      <monitored-service service-name="StrafePing"/>
       <monitored-service service-name="JMX-Cassandra-I1"/>
       <monitored-service service-name="JMX-Cassandra-Newts-I1"/>
     </interface>
