@@ -10,7 +10,13 @@
       "source_ami": "{{ user `source_ami` }}",
       "instance_type": "t2.medium",
       "ssh_username": "ec2-user",
-      "ami_name": "cassandra-{{timestamp}}"
+      "ami_name": "cassandra-{{timestamp}}",
+      "run_tags": {
+        "Name": "Packer AMI Cassandra 3.11"
+      },
+      "tags": {
+        "Name": "Cassandra 3.11"
+      }
     }
   ],
   "provisioners": [

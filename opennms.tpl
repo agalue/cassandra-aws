@@ -14,15 +14,10 @@ echo "### Configuring Hostname and Domain..."
 hostnamectl set-hostname --static $hostname
 echo "preserve_hostname: true" > /etc/cloud/cloud.cfg.d/99_hostname.cfg
 
-echo "### Installing and Configuring PostgreSQL..."
+echo "### Configuring PostgreSQL..."
 
-pg_repo_version="9.6-3"
-pg_version=`echo $pg_repo_version | sed 's/-.//'`
+pg_version=`rpm -qa | grep 'postgres.*-server' | sed 's/.*server-//' | sed 's/-1PGDG.*//' | sed -e 's/\.[^.]*$//'`
 pg_family=`echo $pg_version | sed 's/\.//'`
-
-yum install -y -q https://download.postgresql.org/pub/repos/yum/$pg_version/redhat/rhel-7-x86_64/pgdg-centos$pg_family-$pg_repo_version.noarch.rpm
-sed -i -r 's/[$]releasever/7/g' /etc/yum.repos.d/pgdg-$pg_family-centos.repo
-yum install -y -q postgresql$pg_family postgresql$pg_family-server
 
 /usr/pgsql-$pg_version/bin/postgresql$pg_family-setup initdb
 

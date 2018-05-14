@@ -10,7 +10,13 @@
       "source_ami": "{{ user `source_ami` }}",
       "instance_type": "t2.medium",
       "ssh_username": "ec2-user",
-      "ami_name": "horizon-{{timestamp}}"
+      "ami_name": "horizon-{{timestamp}}",
+      "run_tags": {
+        "Name": "Packer AMI OpenNMS Horizon with PostgreSQL"
+      },
+      "tags": {
+        "Name": "OpenNMS Horizon with PostgreSQL"
+      }
     }
   ],
   "provisioners": [
@@ -22,10 +28,6 @@
       "type": "shell",
       "script": "./scripts/java.sh"
     },    
-    {
-      "type": "shell",
-      "script": "./scripts/postgresql.sh"
-    },
     {
       "type": "shell",
       "script": "./scripts/opennms.sh"

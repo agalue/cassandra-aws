@@ -3,11 +3,12 @@
 
 ######### CUSTOMIZED VARIABLES #########
 
-onms_repo="branches-features-newts-cache-priming"
+onms_repo="bleeding"
 onms_version="-latest-"
 helm_branch="develop"
 grafana_version="5.0.4"
 hawtio_version="1.4.68"
+pg_repo_version="9.6-3"
 
 ########################################
 
@@ -22,6 +23,15 @@ echo "### Installing Common Packages..."
 
 sudo yum -y -q install haveged redis
 sudo systemctl enable haveged
+
+echo "### Installing PostgreSQL from repository version $pg_repo_version..."
+
+pg_version=`echo $pg_repo_version | sed 's/-.//'`
+pg_family=`echo $pg_version | sed 's/\.//'`
+
+sudo yum install -y -q https://download.postgresql.org/pub/repos/yum/$pg_version/redhat/rhel-7-x86_64/pgdg-centos$pg_family-$pg_repo_version.noarch.rpm
+sudo sed -i -r 's/[$]releasever/7/g' /etc/yum.repos.d/pgdg-$pg_family-centos.repo
+sudo yum install -y -q postgresql$pg_family postgresql$pg_family-server postgresql$pg_family-contrib repmgr$pg_family
 
 echo "### Installing Grafana $grafana_version..."
 
