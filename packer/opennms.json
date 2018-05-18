@@ -3,6 +3,7 @@
     "region": "us-east-2",
     "source_ami": "ami-31c7f654"
   },
+  "description": "Latest OpenNMS Horizon with PostgreSQL 9.6 installed.",
   "builders": [
     {
       "type": "amazon-ebs",

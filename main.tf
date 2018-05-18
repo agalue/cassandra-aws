@@ -97,6 +97,7 @@ data "template_file" "opennms" {
     heap_size         = "${var.settings["opennms_heap_size"]}"
     cache_max_entries = "${var.settings["opennms_cache_max_entries"]}"
     ring_buffer_size  = "${var.settings["opennms_ring_buffer_size"]}"
+    use_redis         = "${var.settings["opennms_cache_use_redis"]}"
   }
 }
 

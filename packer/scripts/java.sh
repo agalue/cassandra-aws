@@ -12,7 +12,7 @@ if [ ! -s $java_rpm ]; then
   echo "FATAL: Cannot download Java from $java_url. Using OpenNMS default ..."
   sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
   sudo rpm --import /etc/yum.repos.d/opennms-repo-stable-rhel7.gpg
-  sudo yum install -y -q jdk1.8.0_144
+  sudo yum install -y -q jdk1.8*
   sudo yum erase -y -q opennms-repo-stable
 else
   sudo yum install -y -q $java_rpm

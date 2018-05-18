@@ -8,6 +8,7 @@ cassandra_server=${cassandra_server}
 heap_size=${heap_size}
 cache_max_entries=${cache_max_entries}
 ring_buffer_size=${ring_buffer_size}
+use_redis=${use_redis}
 
 echo "### Configuring Hostname and Domain..."
 
@@ -27,6 +28,22 @@ sed -r -i "s/[#]?listen_addresses =.*/listen_addresses = '*'/" $data_dir/postgre
 
 systemctl enable postgresql-$pg_version
 systemctl start postgresql-$pg_version
+
+if [[ "$use_redis" == "true" ]]; then
+  echo "### Configuring Redis..."
+
+  echo "vm.overcommit_memory=1" > /etc/sysctl.d/redis.conf
+  sysctl -w vm.overcommit_memory=1
+  redis_conf=/etc/redis.conf
+  cp $redis_conf $redis_conf.bak
+  sed -i -r "s/^bind .*/bind 0.0.0.0/" $redis_conf
+  sed -i -r "s/^protected-mode .*/protected-mode no/" $redis_conf
+  sed -i -r "s/^save /# save /" $redis_conf
+  sed -i -r "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lru/" $redis_conf
+
+  systemctl enable redis
+  systemctl start redis
+fi
 
 echo "### Configuring OpenNMS..."
 
@@ -94,7 +111,8 @@ EOF
 
 # External Cassandra
 # For 16 Cores, over 32GB of RAM, and a minimum of 16GB of ONMS Heap size on the OpenNMS server.
-cat <<EOF > $opennms_etc/opennms.properties.d/newts.properties
+newts_cfg=$opennms_etc/opennms.properties.d/newts.properties
+cat <<EOF > $newts_cfg
 org.opennms.timeseries.strategy=newts
 org.opennms.newts.config.hostname=$cassandra_server
 org.opennms.newts.config.keyspace=newts
@@ -107,6 +125,14 @@ org.opennms.newts.config.writer_threads=$num_of_cores
 org.opennms.newts.config.cache.priming.enable=true
 org.opennms.newts.config.cache.priming.block_ms=-1
 EOF
+if [[ "$use_redis" == "true" ]]; then
+  cat <<EOF >> $newts_cfg
+org.opennms.newts.config.cache.strategy=org.opennms.netmgt.newts.support.RedisResourceMetadataCache
+org.opennms.newts.config.cache.redis_hostname=127.0.0.1
+org.opennms.newts.config.cache.redis_port=6379
+EOF
+fi
+
 sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/poller-configuration.xml 
 sed -r -i 's/cassandra-password/cassandra/g' $opennms_etc/poller-configuration.xml 
 sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/collectd-configuration.xml 
