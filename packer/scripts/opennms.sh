@@ -5,8 +5,8 @@
 
 onms_repo="bleeding"
 onms_version="-latest-"
-helm_branch="develop"
-grafana_version="5.0.4"
+helm_branch="stable"
+grafana_version="5.1.3"
 hawtio_version="1.4.68"
 pg_repo_version="9.6-3"
 
