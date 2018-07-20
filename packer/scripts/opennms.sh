@@ -5,7 +5,6 @@
 
 onms_repo="bleeding"
 onms_version="-latest-"
-helm_branch="stable"
 grafana_version="5.1.3"
 hawtio_version="1.4.68"
 pg_repo_version="9.6-3"
@@ -32,34 +31,6 @@ pg_family=`echo $pg_version | sed 's/\.//'`
 sudo yum install -y -q https://download.postgresql.org/pub/repos/yum/$pg_version/redhat/rhel-7-x86_64/pgdg-centos$pg_family-$pg_repo_version.noarch.rpm
 sudo sed -i -r 's/[$]releasever/7/g' /etc/yum.repos.d/pgdg-$pg_family-centos.repo
 sudo yum install -y -q postgresql$pg_family postgresql$pg_family-server postgresql$pg_family-contrib repmgr$pg_family
-
-echo "### Installing Grafana $grafana_version..."
-
-sudo yum install -y -q https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-$grafana_version-1.x86_64.rpm
-
-echo "### Installing NodeJS & Yarn..."
-
-sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
-sudo yum -y -q install gcc-c++ nodejs
-sudo npm install -g yarn
-
-echo "### Installing Helm for Drift from branch $helm_branch..."
-
-sudo mkdir ~/development
-cd ~/development
-sudo git clone https://github.com/OpenNMS/opennms-helm.git
-cd opennms-helm
-if [[ `git branch | grep "^[*] $helm_branch" | sed -e 's/[* ]*//'` == "$helm_branch" ]]; then
-  echo "### Already in branch $helm_branch"
-else
-  echo "### Checking out branch $helm_branch"
-  sudo git checkout -b $helm_branch origin/$helm_branch
-fi
-sudo yarn
-sudo yarn build
-sudo mkdir -p /var/lib/grafana/plugins/opennms-helm-app/
-sudo rsync -ar --delete ~/development/opennms-helm/ /var/lib/grafana/plugins/opennms-helm-app/
-cd
 
 echo "### Installing OpenNMS Dependencies from stable repository..."
 

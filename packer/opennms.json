@@ -1,7 +1,7 @@
 {
   "variables": {
     "region": "us-east-2",
-    "source_ami": "ami-2a0f324f"
+    "source_ami": "ami-8c122be9"
   },
   "description": "Latest OpenNMS Horizon with PostgreSQL 9.6 installed.",
   "builders": [
