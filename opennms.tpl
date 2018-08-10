@@ -6,6 +6,7 @@
 hostname=${hostname}
 cassandra_server=${cassandra_server}
 cassandra_rf=${cassandra_rf}
+cassandra_dc=${cassandra_dc}
 heap_size=${heap_size}
 cache_max_entries=${cache_max_entries}
 ring_buffer_size=${ring_buffer_size}
@@ -148,7 +149,7 @@ done
 echo "### Creating Newts keyspace..."
 
 newts_cfg=$opennms_etc/newts.cql
-sed -r -i "s/'DC1' : 2/'DC1' : $cassandra_rf/" $newts_cfg
+sed -r -i "s/'DC1' : 2/'$cassandra_dc' : $cassandra_rf/" $newts_cfg
 cqlsh -f $newts_cfg $cassandra_server
 
 echo "### Starting OpenNMS..."
