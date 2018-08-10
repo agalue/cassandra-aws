@@ -1,7 +1,8 @@
 {
   "variables": {
     "region": "us-east-2",
-    "source_ami": "ami-8c122be9"
+    "source_ami": "ami-8c122be9",
+    "app_name": "OpenNMS Horizon"
   },
   "description": "Latest OpenNMS Horizon with PostgreSQL 9.6 installed.",
   "builders": [
@@ -11,7 +12,8 @@
       "source_ami": "{{ user `source_ami` }}",
       "instance_type": "t2.medium",
       "ssh_username": "ec2-user",
-      "ami_name": "horizon-{{timestamp}}",
+      "ami_name": "horizon-pg10-cass-{{timestamp}}",
+      "ami_description": "{{ user `app_name` }} with latest Oracle JDK 8 and embedded PostgreSQL",
       "run_tags": {
         "Name": "Packer AMI OpenNMS Horizon with PostgreSQL"
       },
@@ -28,7 +30,16 @@
     {
       "type": "shell",
       "script": "./scripts/java.sh"
-    },    
+    },
+    {
+      "type": "shell",
+      "script": "./scripts/cassandra.sh"
+    },
+    {
+      "type": "file",
+      "source": "./config/opennms/",
+      "destination": "/tmp/sources"
+    },
     {
       "type": "shell",
       "script": "./scripts/opennms.sh"

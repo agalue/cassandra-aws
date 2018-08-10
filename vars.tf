@@ -34,7 +34,7 @@ data "aws_ami" "opennms" {
 
   filter {
     name   = "name"
-    values = ["horizon-*"]
+    values = ["horizon-pg10-cass-*"]
   }
 }
 

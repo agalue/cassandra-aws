@@ -16,6 +16,8 @@ Based on the latest RPMs for Apache Cassandra (3.11.x), the only file that has t
 
 Naturally, the solution creates a network interface and a dedicated disk volume per Cassandra instance on each server (EC2 instance), this is due to the fact that a given Cassandra instance requires a least one dedicated disk and a dedicated IP address.
 
+The OpenNMS instance will have PostgreSQL 10 embedded, as well as a customized keyspace for Newts designed for Multi-DC in mind using TWCS for the compaction strategy, which is the recommended configuration for production (see `packer/config/opennms/newts.cql`).
+
 ## Installation and usage
 
 * Make sure you have your AWS credentials on `~/.aws/credentials`, for example:
@@ -47,7 +49,7 @@ packer build opennms.json
 ```SHELL
 terraform init
 terraform plan
-terraform apply
+terraform apply -auto-approve
 ```
 
 * Wait for the Cassandra cluster to be ready. Each Cassandra instances is added one at a time (as only one node at a time can be joining a cluster). Use `nodetool` to make sure all the 12 instances have joined the cluster:
@@ -89,63 +91,6 @@ UN  172.17.1.41  69.95 KiB  256          17.4%             b1eb7d96-4f83-4aca-9b
 UN  172.17.1.43  69.86 KiB  256          16.6%             d9527cb8-1f56-425d-854b-a13e38bef41e  Rack3
 UN  172.17.1.42  114.72 KiB  256          17.2%             3544f267-e72e-4637-a5b4-6bd1d8fed0bb  Rack3
 UN  172.17.1.31  69.92 KiB  256          15.9%             7d1f6f39-f666-47fa-8adb-60d05b146d17  Rack2
-```
-
-* Initalize the keyspace, from one of the cassandra servers:
-
-```SHELL
-cat <<EOF > ~/newts.cql
-CREATE KEYSPACE IF NOT EXISTS newts WITH replication = {'class' : 'NetworkTopologyStrategy', 'Main' : 3, 'DR': 3  };
-
-CREATE TABLE IF NOT EXISTS newts.samples (
-  context text,
-  partition int,
-  resource text,
-  collected_at timestamp,
-  metric_name text,
-  value blob,
-  attributes map<text, text>,
-  PRIMARY KEY((context, partition, resource), collected_at, metric_name)
-) WITH compaction = {
-  'compaction_window_size': '7',
-  'compaction_window_unit': 'DAYS',
-  'expired_sstable_check_frequency_seconds': '86400',
-  'class': 'org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy'
-} AND gc_grace_seconds = 604800
-  AND read_repair_chance = 0;
-
-CREATE TABLE IF NOT EXISTS newts.terms (
-  context text,
-  field text,
-  value text,
-  resource text,
-  PRIMARY KEY((context, field, value), resource)
-);
-
-CREATE TABLE IF NOT EXISTS newts.resource_attributes (
-  context text,
-  resource text,
-  attribute text,
-  value text,
-  PRIMARY KEY((context, resource), attribute)
-);
-
-CREATE TABLE IF NOT EXISTS newts.resource_metrics (
-  context text,
-  resource text,
-  metric_name text,
-  PRIMARY KEY((context, resource), metric_name)
-);
-EOF
-cqlsh -f ~/newts.cql `hostname`
-```
-
-* Copy over the content of `resources/config` to the OpenNMS server, to override the poller and collector configuration, as well as creating custom requistions for Cassandra and OpenNMS, including the foreign source definitions.
-
-* Start OpenNMS
-
-```SHELL
-[root@opennms ~]# systemctl start opennms
 ```
 
 * Import the requisitions, to collect JMX metrics from OpenNMS and one of the Cassandra servers every 30 seconds.

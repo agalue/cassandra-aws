@@ -5,6 +5,7 @@
 
 hostname=${hostname}
 cassandra_server=${cassandra_server}
+cassandra_rf=${cassandra_rf}
 heap_size=${heap_size}
 cache_max_entries=${cache_max_entries}
 ring_buffer_size=${ring_buffer_size}
@@ -14,20 +15,6 @@ echo "### Configuring Hostname and Domain..."
 
 hostnamectl set-hostname --static $hostname
 echo "preserve_hostname: true" > /etc/cloud/cloud.cfg.d/99_hostname.cfg
-
-echo "### Configuring PostgreSQL..."
-
-pg_version=`rpm -qa | grep 'postgres.*-server' | sed 's/.*server-//' | sed 's/-1PGDG.*//' | sed -e 's/\.[^.]*$//'`
-pg_family=`echo $pg_version | sed 's/\.//'`
-
-/usr/pgsql-$pg_version/bin/postgresql$pg_family-setup initdb
-
-data_dir=/var/lib/pgsql/$pg_version/data
-sed -r -i 's/(peer|ident)/trust/g' $data_dir/pg_hba.conf
-sed -r -i "s/[#]?listen_addresses =.*/listen_addresses = '*'/" $data_dir/postgresql.conf
-
-systemctl enable postgresql-$pg_version
-systemctl start postgresql-$pg_version
 
 if [[ "$use_redis" == "true" ]]; then
   echo "### Configuring Redis..."
@@ -133,21 +120,6 @@ org.opennms.newts.config.cache.redis_port=6379
 EOF
 fi
 
-sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/poller-configuration.xml 
-sed -r -i 's/cassandra-password/cassandra/g' $opennms_etc/poller-configuration.xml 
-sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/collectd-configuration.xml 
-sed -r -i 's/cassandra-password/cassandra/g' $opennms_etc/collectd-configuration.xml 
-
-# RRD Settings
-cat <<EOF > $opennms_etc/opennms.properties.d/rrd.properties
-org.opennms.rrd.storeByGroup=true
-org.opennms.rrd.storeByForeignSource=true
-EOF
-
-# Logging
-sed -r -i 's/value="DEBUG"/value="WARN"/' $opennms_etc/log4j2.xml
-sed -r -i '/manager/s/WARN/DEBUG/' $opennms_etc/log4j2.xml
-
 # WARNING: For testing purposes only
 # Lab collection and polling interval (30 seconds)
 sed -r -i 's/step="300"/step="30"/g' $opennms_etc/telemetryd-configuration.xml 
@@ -161,14 +133,25 @@ for f in "$${files[@]}"; do
   fi
 done
 
-# TODO: the following is due to some issues with the datachoices plugin
-cat <<EOF > $opennms_etc/org.opennms.features.datachoices.cfg
-enabled=false
-acknowledged-by=admin
-acknowledged-at=Mon Jan 01 00\:00\:00 EDT 2018
-EOF
-
 echo "### Running OpenNMS install script..."
 
 $opennms_home/bin/runjava -S /usr/java/latest/bin/java
 $opennms_home/bin/install -dis
+
+echo "### Waiting for Cassandra..."
+
+until nodetool -h $cassandra_server status | grep $cassandra_server | grep -q "UN";
+do
+  sleep 10
+done
+
+echo "### Creating Newts keyspace..."
+
+newts_cfg=$opennms_etc/newts.cql
+sed -r -i "s/'DC1' : 2/'DC1' : $cassandra_rf/" $newts_cfg
+cqlsh -f $newts_cfg $cassandra_server
+
+echo "### Starting OpenNMS..."
+
+systemctl enable opennms
+systemctl start opennms

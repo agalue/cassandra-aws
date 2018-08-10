@@ -1,8 +1,10 @@
 {
   "variables": {
     "region": "us-east-2",
-    "source_ami": "ami-8c122be9"
+    "source_ami": "ami-8c122be9",
+    "app_name": "Apache Cassandra 3.11.x"
   },
+  "description": "{{ user `app_name` }}",
   "builders": [
     {
       "type": "amazon-ebs",
@@ -11,11 +13,12 @@
       "instance_type": "t2.medium",
       "ssh_username": "ec2-user",
       "ami_name": "cassandra-{{timestamp}}",
+      "ami_description": "{{ user `app_name` }} with latest Oracle JDK 8",
       "run_tags": {
-        "Name": "Packer AMI Cassandra 3.11"
+        "Name": "Packer AMI Cassandra 3.11.x"
       },
       "tags": {
-        "Name": "Cassandra 3.11"
+        "Name": "Cassandra 3.11.x"
       }
     }
   ],
