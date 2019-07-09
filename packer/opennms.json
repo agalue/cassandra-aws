@@ -1,8 +1,10 @@
 {
   "variables": {
-    "region": "us-east-2",
-    "source_ami": "ami-0cf31d971a3ca20d6",
-    "app_name": "OpenNMS Horizon"
+    "region": "us-west-2",
+    "source_ami": "ami-082b5a644766e0e6f",
+    "app_name": "OpenNMS Horizon",
+    "environment": "Test",
+    "department": "Support"
   },
   "description": "Latest OpenNMS Horizon with PostgreSQL 9.6 installed.",
   "builders": [
@@ -15,10 +17,14 @@
       "ami_name": "horizon-pg10-cass-{{timestamp}}",
       "ami_description": "{{ user `app_name` }} with latest Oracle JDK 8 and embedded PostgreSQL",
       "run_tags": {
-        "Name": "Packer AMI OpenNMS Horizon with PostgreSQL"
+        "Name": "Packer AMI {{ user `app_name` }}",
+        "Environment": "{{ user `environment` }}",
+        "Department": "{{ user `department` }}"
       },
       "tags": {
-        "Name": "OpenNMS Horizon with PostgreSQL"
+        "Name": "{{ user `app_name` }}",
+        "Environment": "{{ user `environment` }}",
+        "Department": "{{ user `department` }}"
       }
     }
   ],
@@ -29,7 +35,10 @@
     },
     {
       "type": "shell",
-      "script": "./scripts/java.sh"
+      "script": "./scripts/java.sh",
+      "environment_vars": [
+        "USE_LATEST_JAVA=yes"
+      ]
     },
     {
       "type": "shell",

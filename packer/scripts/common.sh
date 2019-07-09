@@ -18,7 +18,7 @@ sudo ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 echo "### Installing common packages..."
 
 sudo yum -y -q update
-sudo yum -y -q install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo amazon-linux-extras install epel -y
 sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree
 
 echo "### Configuring Net-SNMP..."

@@ -1,8 +1,10 @@
 {
   "variables": {
-    "region": "us-east-2",
-    "source_ami": "ami-0cf31d971a3ca20d6",
-    "app_name": "Apache Cassandra 3.11.x"
+    "region": "us-west-2",
+    "source_ami": "ami-082b5a644766e0e6f",
+    "app_name": "Apache Cassandra 3.11.x",
+    "environment": "Test",
+    "department": "Support"
   },
   "description": "{{ user `app_name` }}",
   "builders": [
@@ -15,10 +17,14 @@
       "ami_name": "cassandra-{{timestamp}}",
       "ami_description": "{{ user `app_name` }} with latest Oracle JDK 8",
       "run_tags": {
-        "Name": "Packer AMI Cassandra 3.11.x"
+        "Name": "Packer AMI {{ user `app_name` }}",
+        "Environment": "{{ user `environment` }}",
+        "Department": "{{ user `department` }}"
       },
       "tags": {
-        "Name": "Cassandra 3.11.x"
+        "Name": "{{ user `app_name` }}",
+        "Environment": "{{ user `environment` }}",
+        "Department": "{{ user `department` }}"
       }
     }
   ],

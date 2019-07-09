@@ -22,13 +22,15 @@ The OpenNMS instance will have PostgreSQL 10 embedded, as well as a customized k
 
 * Make sure you have your AWS credentials on `~/.aws/credentials`, for example:
 
-```INI
+```ini
 [default]
 aws_access_key_id = XXXXXXXXXXXXXXXXX
 aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
 * Install the Terraform binary from [terraform.io](https://www.terraform.io)
+
+> *NOTE*: The templates requires Terraform version 0.12.x.
 
 * Install the Packer binary from [packer.io](https://www.packer.io)
 
@@ -40,7 +42,7 @@ aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 * Build the custom AMIs using Packer:
 
-```SHELL
+```bash
 cd packer
 packer build cassandra.json
 packer build opennms.json
@@ -48,7 +50,7 @@ packer build opennms.json
 
 * Execute the following commands from the repository's root directory (at the same level as the .tf files):
 
-```SHELL
+```bash
 terraform init
 terraform plan
 terraform apply -auto-approve
@@ -56,26 +58,27 @@ terraform apply -auto-approve
 
 * Wait for the Cassandra cluster to be ready. Each Cassandra instances is added one at a time (as only one node at a time can be joining a cluster). Use `nodetool` to make sure all the 12 instances have joined the cluster:
 
-```SHELL
+```bash
 nodetool -u cassandra -pw cassandra status
 ```
 
 If there are missing instances, log into the appropriate Cassandra server and check which instances are running:
 
-```SHELL
+```bash
 systemctl status cassandra3*
 ```
 
 Let's say that the instance identified with `node2` is not running. Assuming that no other instance is joining the cluster, run the following:
 
-```SHELL
+```bash
 systemctl start cassandra3@node2
 ```
 
 Example of healthy status:
 
-```SHELL
-[ec2-user@cassandra01 ~]$ nodetool -u cassandra -pw cassandra status
+```bash
+nodetool -u cassandra -pw cassandra status
+
 Datacenter: Main
 ================
 Status=Up/Down
@@ -97,22 +100,22 @@ UN  172.17.1.31  69.92 KiB  256          15.9%             7d1f6f39-f666-47fa-8a
 
 * Import the requisitions, to collect JMX metrics from OpenNMS and the Cassandra servers every 30 seconds.
 
-```SHELL
-[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import Cassandra
-[root@opennms ~]# /opt/opennms/bin/provision.pl requisition import OpenNMS
+```bash
+/opt/opennms/bin/provision.pl requisition import Cassandra
+/opt/opennms/bin/provision.pl requisition import OpenNMS
 ```
 
 * Connect to the Karaf Shell through SSH:
 
-```SHELL
-[root@opennms ~]# ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
+```bash
+ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
 ```
 
   Make sure it is running at least Karaf 4.1.5.
 
 * Execute the `metrics:stress` command. The following is an example to generate 100000 samples per second:
 
-```
+```bash
 metrics:stress -r 60 -n 15000 -f 20 -g 10 -a 10 -s 1 -t 200 -i 300
 ```
 
