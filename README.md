@@ -128,4 +128,4 @@ To destroy all the resources:
 terraform destroy
 ```
 
-It seems like terraform has some dependency issues when destroying the lab using modules. If this happens, you have to manually terminate the instances prior running `terraform destoy`; otherwise it stays forever waiting on destroying the internet gateway without even trying to shutdown the resources created inside the modules.
+In case there are issues while destroying the objects, please manually terminate the instances using the AWS console prior running `terraform destroy`.

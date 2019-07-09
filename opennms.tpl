@@ -105,13 +105,14 @@ org.opennms.timeseries.strategy=newts
 org.opennms.newts.config.hostname=$cassandra_server
 org.opennms.newts.config.keyspace=newts
 org.opennms.newts.config.port=9042
-org.opennms.newts.query.minimum_step=30000
-org.opennms.newts.query.heartbeat=45000
 org.opennms.newts.config.ring_buffer_size=$ring_buffer_size
 org.opennms.newts.config.cache.max_entries=$cache_max_entries
 org.opennms.newts.config.writer_threads=$num_of_cores
 org.opennms.newts.config.cache.priming.enable=true
 org.opennms.newts.config.cache.priming.block_ms=-1
+# For collecting data every 30 seconds from OpenNMS and Cassandra
+org.opennms.newts.query.minimum_step=30000
+org.opennms.newts.query.heartbeat=450000
 EOF
 if [[ "$use_redis" == "true" ]]; then
   cat <<EOF >> $newts_cfg
@@ -121,8 +122,7 @@ org.opennms.newts.config.cache.redis_port=6379
 EOF
 fi
 
-# WARNING: For testing purposes only
-# Lab collection and polling interval (30 seconds)
+# To monitor and collect metrics every 30 seconds from OpenNMS and Cassandra
 sed -r -i 's/step="300"/step="30"/g' $opennms_etc/telemetryd-configuration.xml 
 sed -r -i 's/interval="300000"/interval="30000"/g' $opennms_etc/collectd-configuration.xml 
 sed -r -i 's/interval="300000" user/interval="30000" user/g' $opennms_etc/poller-configuration.xml 

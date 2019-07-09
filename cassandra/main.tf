@@ -70,8 +70,9 @@ resource "aws_ebs_volume" "cassandra" {
 }
 
 resource "aws_volume_attachment" "cassandra" {
-  count       = "${length(var.private_ips)}"
-  device_name = "${element(var.aws_ebs_device_names, count.index)}"
-  volume_id   = "${element(aws_ebs_volume.cassandra.*.id, count.index)}"
-  instance_id = "${aws_instance.cassandra.id}"
+  count        = "${length(var.private_ips)}"
+  device_name  = "${element(var.aws_ebs_device_names, count.index)}"
+  volume_id    = "${element(aws_ebs_volume.cassandra.*.id, count.index)}"
+  instance_id  = "${aws_instance.cassandra.id}"
+  force_detach = true
 }
