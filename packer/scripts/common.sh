@@ -18,7 +18,7 @@ echo "### Installing common packages..."
 
 sudo yum -y -q update
 sudo amazon-linux-extras install epel -y
-sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree
+sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree telnet curl nmon
 
 echo "### Configuring Net-SNMP..."
 
