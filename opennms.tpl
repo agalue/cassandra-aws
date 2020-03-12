@@ -4,10 +4,9 @@
 # AWS Template Variables
 
 hostname=${hostname}
-cassandra_server=${cassandra_server}
+cassandra_seed=${cassandra_seed}
 cassandra_rf=${cassandra_rf}
 cassandra_dc=${cassandra_dc}
-heap_size=${heap_size}
 cache_max_entries=${cache_max_entries}
 ring_buffer_size=${ring_buffer_size}
 use_redis=${use_redis}
@@ -45,7 +44,13 @@ opennms_etc=$opennms_home/etc
 num_of_cores=`cat /proc/cpuinfo | grep "^processor" | wc -l`
 half_of_cores=`expr $num_of_cores / 2`
 
-sed -r -i "/JAVA_HEAP_SIZE/s/=.*/=$heap_size" $opennms_etc/opennms.conf
+total_mem_in_mb=`free -m | awk '/:/ {print $2;exit}'`
+mem_in_mb=`expr $total_mem_in_mb / 2`
+if [ "$mem_in_mb" -gt "30720" ]; then
+  mem_in_mb="30720"
+fi
+
+sed -r -i "/JAVA_HEAP_SIZE/s/=.*/=$mem_in_mb" $opennms_etc/opennms.conf
 sed -r -i "/GCThreads/s/=.*/=$half_of_cores\"" $opennms_etc/opennms.conf
 sed -r -i "/rmi.server.hostname/s/=.*/=$hostname\"" $opennms_etc/opennms.conf
 
@@ -54,7 +59,7 @@ sed -r -i "/rmi.server.hostname/s/=.*/=$hostname\"" $opennms_etc/opennms.conf
 newts_cfg=$opennms_etc/opennms.properties.d/newts.properties
 cat <<EOF > $newts_cfg
 org.opennms.timeseries.strategy=newts
-org.opennms.newts.config.hostname=$cassandra_server
+org.opennms.newts.config.hostname=$cassandra_seed
 org.opennms.newts.config.keyspace=newts
 org.opennms.newts.config.port=9042
 org.opennms.newts.config.ring_buffer_size=$ring_buffer_size
@@ -93,7 +98,7 @@ $opennms_home/bin/install -dis
 
 echo "### Waiting for Cassandra..."
 
-until nodetool -h $cassandra_server status | grep $cassandra_server | grep -q "UN";
+until nodetool -h $cassandra_seed status | grep $cassandra_seed | grep -q "UN";
 do
   sleep 10
 done
@@ -102,7 +107,7 @@ echo "### Creating Newts keyspace..."
 
 newts_cfg=$opennms_etc/newts.cql
 sed -r -i "s/'DC1' : 2/'$cassandra_dc' : $cassandra_rf/" $newts_cfg
-cqlsh -f $newts_cfg $cassandra_server
+cqlsh -f $newts_cfg $cassandra_seed
 
 echo "### Starting OpenNMS..."
 

@@ -76,11 +76,10 @@ variable "settings" {
     cassandra_instance_heap_size = 16384
     cassandra_replication_factor = 3
     opennms_instance_type        = "c5.9xlarge"
-    opennms_heap_size            = 24576
     opennms_private_ip           = "172.17.1.100"
-    opennms_cache_max_entries    = 4000000
+    opennms_cache_max_entries    = 2000000
     opennms_ring_buffer_size     = 4194304
-    opennms_cache_use_redis      = "false"
+    opennms_cache_use_redis      = false
   }
 }
 

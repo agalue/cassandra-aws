@@ -57,7 +57,7 @@ do
   mount_point=/data/node$i
   mkdir -p $mount_point
   mount -t xfs $device $mount_point
-  echo "$device $mount_point xfs defaults 0 0" >> /etc/fstab
+  echo "$device $mount_point xfs defaults,noatime 0 0" >> /etc/fstab
 done
 
 echo "### Configuring Instance Directories..."

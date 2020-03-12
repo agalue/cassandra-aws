@@ -93,10 +93,9 @@ data "template_file" "opennms" {
 
   vars = {
     hostname          = "opennms"
-    cassandra_server  = var.settings["cassandra_seed"]
+    cassandra_seed    = var.settings["cassandra_seed"]
     cassandra_rf      = var.settings["cassandra_replication_factor"]
     cassandra_dc      = var.settings["cassandra_datacenter_name"]
-    heap_size         = var.settings["opennms_heap_size"]
     cache_max_entries = var.settings["opennms_cache_max_entries"]
     ring_buffer_size  = var.settings["opennms_ring_buffer_size"]
     use_redis         = var.settings["opennms_cache_use_redis"]

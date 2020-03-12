@@ -66,6 +66,8 @@ cat <<EOF | sudo tee /etc/security/limits.d/application.conf
 EOF
 
 cat <<EOF | sudo tee /etc/systemd/system/disable-thp.service
+# For more information: https://tobert.github.io/tldr/cassandra-java-huge-pages.html
+
 [Unit]
 Description=Disable Transparent Huge Pages (THP)
 
