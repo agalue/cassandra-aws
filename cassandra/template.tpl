@@ -146,7 +146,9 @@ do
   sed -r -i "s|/var/lib/cassandra/data|$data_dir/data|" $conf_file
 
   # Cassandra Tuning
-  sed -r -i "s|^[# ]*?concurrent_compactors: .*|concurrent_compactors: 32|" $conf_file
+  num_of_cores=`cat /proc/cpuinfo | grep "^processor" | wc -l`
+  compactors=`expr $num_of_cores / $num_instances`
+  sed -r -i "s|^[# ]*?concurrent_compactors: .*|concurrent_compactors: $compactors|" $conf_file
   sed -r -i "s|^[# ]*?commitlog_total_space_in_mb: .*|commitlog_total_space_in_mb: 2048|" $conf_file
 
   # Cassandra Environment
