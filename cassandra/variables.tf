@@ -77,12 +77,12 @@ variable "private_ips" {
 }
 
 variable "startup_delay" {
-  type    = string
-  default = "0"
+  type    = number
+  default = 0
 }
 
 variable "instance_delay" {
-  type    = string
-  default = "45"
+  type    = number
+  default = 60
 }
 

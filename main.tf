@@ -22,6 +22,7 @@ module "cassandra" {
   private_ips         = each.value.iplist
   heap_size           = var.settings["cassandra_instance_heap_size"]
   startup_delay       = each.value.delay
+  instance_delay      = 60
 }
 
 

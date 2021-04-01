@@ -50,9 +50,10 @@ variable "public_subnet_cidr" {
   default     = "172.17.1.0/24"
 }
 
-# By default, the cassandra module waits 45sec prior start each instance.
+# Only one instance can join the cluster at a time.
+# By default, the cassandra module waits 60sec before start each instance.
 # There are going to be 3 instances per server/module.
-# Therefore, the total time to wait per server is 135sec (delay).
+# Therefore, the total time to wait per server is 180sec (delay).
 variable "cassandra_servers" {
   description = "Servers with multiple Cassandra instances (rach acting as a rack)"
   type        = map
@@ -63,15 +64,15 @@ variable "cassandra_servers" {
       "iplist": ["172.17.1.21", "172.17.1.22", "172.17.1.23"],
     },
     "cassandra2": {
-      "delay": 135,
+      "delay": 180,
       "iplist": ["172.17.1.31", "172.17.1.32", "172.17.1.33"],
     },
     "cassandra3": {
-      "delay": 270,
+      "delay": 320,
       "iplist": ["172.17.1.41", "172.17.1.42", "172.17.1.43"],
     },
     "cassandra4": {
-      "delay": 405,
+      "delay": 500,
       "iplist": ["172.17.1.51", "172.17.1.52", "172.17.1.53"],
     },
   }
@@ -79,7 +80,7 @@ variable "cassandra_servers" {
 
 variable "settings" {
   description = "Common application settings"
-  type        = map(string)
+  type        = map
 
   default = {
     cassandra_instance_type      = "m4.10xlarge"

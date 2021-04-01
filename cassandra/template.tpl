@@ -162,24 +162,16 @@ do
   sed -r -i "s/^[#]?HEAP_NEWSIZE=\".*\"/HEAP_NEWSIZE=\"$${heap_size}m\"/" $env_file
 
   # Disable CMSGC
-  sed -r -i "/UseParNewGC/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/UseConcMarkSweepGC/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSParallelRemarkEnabled/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/SurvivorRatio/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/MaxTenuringThreshold/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSInitiatingOccupancyFraction/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/UseCMSInitiatingOccupancyOnly/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSWaitDuration/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSParallelInitialMarkEnabled/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSEdenChunksRecordAlways/s/-XX/#-XX/" $jvm_file
-  sed -r -i "/CMSClassUnloadingEnabled/s/-XX/#-XX/" $jvm_file
+  ToDisable=(UseParNewGC UseConcMarkSweepGC CMSParallelRemarkEnabled SurvivorRatio MaxTenuringThreshold CMSInitiatingOccupancyFraction UseCMSInitiatingOccupancyOnly CMSWaitDuration CMSParallelInitialMarkEnabled CMSEdenChunksRecordAlways CMSClassUnloadingEnabled)
+  for entry in "${ToDisable[@]}"; do
+    sed -r -i "/$entry/s/-XX/#-XX/" $jvm_file
+  done
 
   # Enable G1GC
-  sed -r -i "/UseG1GC/s/#-XX/-XX/" $jvm_file
-  sed -r -i "/G1RSetUpdatingPauseTimePercent/s/#-XX/-XX/" $jvm_file
-  sed -r -i "/MaxGCPauseMillis/s/#-XX/-XX/" $jvm_file
-  sed -r -i "/InitiatingHeapOccupancyPercent/s/#-XX/-XX/" $jvm_file
-  sed -r -i "/ParallelGCThreads/s/#-XX/-XX/" $jvm_file
+  ToEnable=(UseG1GC G1RSetUpdatingPauseTimePercent MaxGCPauseMillis InitiatingHeapOccupancyPercent ParallelGCThreads)
+  for entry in "${ToEnable[@]}"; do
+    sed -r -i "/$entry/s/#-XX/-XX/" $jvm_file
+  done
 
   # Cassandra logs
   sed -r -i "s|.cassandra.logdir.|{cassandra.logdir}/node$i|" $log_file
@@ -192,7 +184,8 @@ do
   echo "if \$programname == 'cassandra-node$i' then /var/log/cassandra/node$i/cassandra.log" >> $rsyslog_file
 done
 
-# Make sure that CASSANDRA_CONF is not overriden
+echo "### Make sure that CASSANDRA_CONF is not overriden..."
+
 infile=/usr/share/cassandra/cassandra.in.sh 
 sed -r -i 's/^CASSANDRA_CONF/#CASSANDRA_CONF/' $infile 
 echo 'if [ -z "$CASSANDRA_CONF" ]; then
