@@ -1,11 +1,10 @@
 # @author: Alejandro Galue <agalue@opennms.org>
 
-# By default the cassandra module waits 45sec prior start each instance,
-# and there are going to be 3 instances per server/module.
-# Each server should wait to continue the 45sec between instances.
-
-module "cassandra1" {
+module "cassandra" {
   source              = "./cassandra"
+
+  for_each = var.cassandra_servers
+
   aws_ami             = data.aws_ami.cassandra.image_id
   aws_instance_type   = var.settings["cassandra_instance_type"]
   aws_avail_zone      = data.aws_availability_zones.available.names[0]
@@ -13,80 +12,18 @@ module "cassandra1" {
   aws_key_name        = var.aws_key_name
   aws_ebs_volume_size = var.settings["cassandra_volume_size"]
   aws_private_key     = var.aws_private_key
-  aws_tag_name        = "Terraform Cassandra 1"
+  aws_tag_name        = "Terraform ${each.key}"
   aws_security_groups = [aws_security_group.common.id, aws_security_group.cassandra.id]
-  hostname            = "cassandra01"
+  hostname            = each.key
   cluster_name        = var.settings["cassandra_cluster_name"]
   datacenter          = var.settings["cassandra_datacenter_name"]
-  rack                = "Rack1"
+  rack                = each.key # Same as hostname
   seed_name           = var.settings["cassandra_seed"]
-  private_ips         = var.cassandra_ip_addresses[0]
+  private_ips         = each.value.iplist
   heap_size           = var.settings["cassandra_instance_heap_size"]
-  startup_delay       = "0"
+  startup_delay       = each.value.delay
 }
 
-module "cassandra2" {
-  source              = "./cassandra"
-  aws_ami             = data.aws_ami.cassandra.image_id
-  aws_instance_type   = var.settings["cassandra_instance_type"]
-  aws_avail_zone      = data.aws_availability_zones.available.names[0]
-  aws_subnet_id       = aws_subnet.public.id
-  aws_key_name        = var.aws_key_name
-  aws_ebs_volume_size = var.settings["cassandra_volume_size"]
-  aws_private_key     = var.aws_private_key
-  aws_tag_name        = "Terraform Cassandra 2"
-  aws_security_groups = [aws_security_group.common.id, aws_security_group.cassandra.id]
-  hostname            = "cassandra02"
-  cluster_name        = var.settings["cassandra_cluster_name"]
-  datacenter          = var.settings["cassandra_datacenter_name"]
-  rack                = "Rack2"
-  seed_name           = var.settings["cassandra_seed"]
-  private_ips         = var.cassandra_ip_addresses[1]
-  heap_size           = var.settings["cassandra_instance_heap_size"]
-  startup_delay       = "135"
-}
-
-module "cassandra3" {
-  source              = "./cassandra"
-  aws_ami             = data.aws_ami.cassandra.image_id
-  aws_instance_type   = var.settings["cassandra_instance_type"]
-  aws_avail_zone      = data.aws_availability_zones.available.names[0]
-  aws_subnet_id       = aws_subnet.public.id
-  aws_key_name        = var.aws_key_name
-  aws_ebs_volume_size = var.settings["cassandra_volume_size"]
-  aws_private_key     = var.aws_private_key
-  aws_tag_name        = "Terraform Cassandra 3"
-  aws_security_groups = [aws_security_group.common.id, aws_security_group.cassandra.id]
-  hostname            = "cassandra03"
-  cluster_name        = var.settings["cassandra_cluster_name"]
-  datacenter          = var.settings["cassandra_datacenter_name"]
-  rack                = "Rack3"
-  seed_name           = var.settings["cassandra_seed"]
-  private_ips         = var.cassandra_ip_addresses[2]
-  heap_size           = var.settings["cassandra_instance_heap_size"]
-  startup_delay       = "270"
-}
-
-module "cassandra4" {
-  source              = "./cassandra"
-  aws_ami             = data.aws_ami.cassandra.image_id
-  aws_instance_type   = var.settings["cassandra_instance_type"]
-  aws_avail_zone      = data.aws_availability_zones.available.names[0]
-  aws_subnet_id       = aws_subnet.public.id
-  aws_key_name        = var.aws_key_name
-  aws_ebs_volume_size = var.settings["cassandra_volume_size"]
-  aws_private_key     = var.aws_private_key
-  aws_tag_name        = "Terraform Cassandra 4"
-  aws_security_groups = [aws_security_group.common.id, aws_security_group.cassandra.id]
-  hostname            = "cassandra04"
-  cluster_name        = var.settings["cassandra_cluster_name"]
-  datacenter          = var.settings["cassandra_datacenter_name"]
-  rack                = "Rack4"
-  seed_name           = var.settings["cassandra_seed"]
-  private_ips         = var.cassandra_ip_addresses[3]
-  heap_size           = var.settings["cassandra_instance_heap_size"]
-  startup_delay       = "405"
-}
 
 data "template_file" "opennms" {
   template = file("${path.module}/opennms.tpl")
@@ -118,10 +55,7 @@ resource "aws_instance" "opennms" {
   ]
 
   depends_on = [
-    module.cassandra1,
-    module.cassandra2,
-    module.cassandra3,
-    module.cassandra4,
+    module.cassandra,
   ]
 
   connection {
