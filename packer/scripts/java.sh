@@ -9,5 +9,5 @@ if [ "$USE_LATEST_JAVA" != "" ]; then
   sudo amazon-linux-extras install java-openjdk11 -y
   sudo yum install -y -q java-11-openjdk-devel
 else
-  sudo yum install -y -q java-1.8.0-openjdk-devel java-1.8.0-openjdk-headles
+  sudo yum install -y -q java-1.8.0-openjdk-devel
 fi
