@@ -4,19 +4,23 @@ Ideally, it is recommended to have medium-size servers as Cassandra nodes rather
 
 Unfortunately, we might get something different from what we expect when we request a set of servers to build a database cluster like this one, as probably the company already has established rules for the kind of hardware you'll get for a given role.
 
-Having big servers for Cassandra is a waste of resources, unfortunately. The best way to work around this problem, and have better usage of these big servers in terms of performance, is by having multiple instances of Cassandra running simultaneously on the same node.
+Having big servers for Cassandra is a waste of resources, unfortunately. The best way to work around this problem, and obtain the best from these big servers in terms of performance, assuming that [ScyllaDB](https://www.scylladb.com/) is not an option, is by having multiple instances of Cassandra running simultaneously on the same node.
 
 Of course, this imposes some challenges when configuring the solution.
 
-This recipe shows one way to solve this problem: having a dedicated directory for each instance to hold the configuration, data, and logs. This directory must point to a dedicated disk (or RAID0 set, but not RAID1 or RAID5) on the server (SSD is preferred).
+This recipe shows one way to solve this problem:
 
-Then, use a single `systemd` service definition to manage all the instances.
+1) Have a dedicated directory for each instance to hold the configuration, data, and logs. This directory must point to a dedicated disk (or RAID0 set, but not RAID1 or RAID5) on the server (SSD is preferred).
 
-Based on the latest RPMs for Apache Cassandra (3.11.x), the only file that has to be modified from the installed files is `/usr/share/cassandra/cassandra.in.sh`, but that should not be a problem when upgrading the nodes.
+2) As it is the IP address that Cassandra uses to identify itself as a node in the cluster, we need a dedicated NIC per instance so that each of them can have its own IP address.
 
-This solution creates a network interface and a dedicated disk volume per Cassandra instance on each server (EC2 instance). This is because a given Cassandra instance requires a least one dedicated disk and a dedicated fixed IP address.
+3) Use a single `systemd` service definition to manage all the instances on a given server, offering a way to manipulate them individually when required.
 
-The OpenNMS instance will have PostgreSQL 10 embedded and a customized keyspace for Newts designed for Multi-DC in mind using TWCS for the compaction strategy, which is the recommended configuration for production (see `packer/config/opennms/newts.cql`).
+4) Use Network Topology to enable rack-awareness so that each physical node can act as a rack from Cassandra's perspective, so replication would never happen in the same "rack" (or physical server). Otherwise, it is possible to lose data when a physical server goes down regardless of the replication factor (as that means multiple Cassandra instances will go down simultaneously).
+
+Based on the latest RPMs for Apache Cassandra (3.11.x), the only file that has to be modified from the installed files is `/usr/share/cassandra/cassandra.in.sh`, but that should not be a problem when upgrading the application.
+
+The OpenNMS instance will have PostgreSQL 10 embedded and a customized keyspace for Newts designed for Multi-DC in mind (but for rack-awareness in our use case) using TWCS for the compaction strategy, the recommended configuration for production (see `packer/config/opennms/newts.cql`).
 
 ## Installation and usage
 
