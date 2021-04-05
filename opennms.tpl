@@ -5,11 +5,17 @@
 
 hostname=${hostname}
 cassandra_seed=${cassandra_seed}
+cassandra_snitch=${cassandra_snitch}
 cassandra_rf=${cassandra_rf}
 cassandra_dc=${cassandra_dc}
 cache_max_entries=${cache_max_entries}
 ring_buffer_size=${ring_buffer_size}
 use_redis=${use_redis}
+newts_ttl=${newts_ttl}
+newts_resource_shard=${newts_resource_shard}
+twcs_window_size=${twcs_window_size}
+twcs_window_unit=${twcs_window_unit}
+twcs_exp_sstable_check_freq=${twcs_exp_sstable_check_freq}
 
 echo "### Configuring Hostname and Domain..."
 
@@ -67,6 +73,11 @@ org.opennms.newts.config.cache.max_entries=$cache_max_entries
 org.opennms.newts.config.writer_threads=$num_of_cores
 org.opennms.newts.config.cache.priming.enable=true
 org.opennms.newts.config.cache.priming.block_ms=-1
+org.opennms.newts.config.read_consistency=ONE
+org.opennms.newts.config.write_consistency=ANY
+org.opennms.newts.config.max_batch_size=16
+org.opennms.newts.config.ttl=$newts_ttl
+org.opennms.newts.config.resource_shard=$newts_resource_shard
 # For collecting data every 30 seconds from OpenNMS and Cassandra
 org.opennms.newts.query.minimum_step=30000
 org.opennms.newts.query.heartbeat=450000
@@ -106,7 +117,15 @@ done
 echo "### Creating Newts keyspace..."
 
 newts_cfg=$opennms_etc/newts.cql
-sed -r -i "s/'DC1' : 2/'$cassandra_dc' : $cassandra_rf/" $newts_cfg
+if [ "$cassandra_snitch" == "SimpleSnitch" ]; then
+  sed -r -i "s/replication = .*/replication = {'class' : 'SimpleStrategy', 'replication_factor' : $cassandra_rf };/" $newts_cfg
+else
+  sed -r -i "s/'DC1' : 2/'$cassandra_dc' : $cassandra_rf/" $newts_cfg
+fi
+sed -r -i "/compaction_window_size/s/7/$twcs_window_size/" $newts_cfg
+sed -r -i "/compaction_window_unit/s/DAYS/$twcs_window_unit/" $newts_cfg
+sed -r -i "/expired_sstable_check_frequency_seconds/s/86400/$twcs_exp_sstable_check_freq/" $newts_cfg
+
 cqlsh -f $newts_cfg $cassandra_seed
 
 echo "### Starting OpenNMS..."

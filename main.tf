@@ -16,6 +16,7 @@ module "cassandra" {
   aws_security_groups = [aws_security_group.common.id, aws_security_group.cassandra.id]
   hostname            = each.key
   cluster_name        = var.settings["cassandra_cluster_name"]
+  snitch              = var.settings["cassandra_snitch"]
   datacenter          = var.settings["cassandra_datacenter_name"]
   rack                = each.key # Same as hostname
   seed_name           = var.settings["cassandra_seed"]
@@ -30,13 +31,19 @@ data "template_file" "opennms" {
   template = file("${path.module}/opennms.tpl")
 
   vars = {
-    hostname          = "opennms"
-    cassandra_seed    = var.settings["cassandra_seed"]
-    cassandra_rf      = var.settings["cassandra_replication_factor"]
-    cassandra_dc      = var.settings["cassandra_datacenter_name"]
-    cache_max_entries = var.settings["opennms_cache_max_entries"]
-    ring_buffer_size  = var.settings["opennms_ring_buffer_size"]
-    use_redis         = var.settings["opennms_cache_use_redis"]
+    hostname                    = "opennms"
+    cassandra_seed              = var.settings["cassandra_seed"]
+    cassandra_snitch            = var.settings["cassandra_snitch"]
+    cassandra_rf                = var.settings["cassandra_replication_factor"]
+    cassandra_dc                = var.settings["cassandra_datacenter_name"]
+    cache_max_entries           = var.settings["opennms_cache_max_entries"]
+    ring_buffer_size            = var.settings["opennms_ring_buffer_size"]
+    newts_ttl                   = var.settings["opennms_newts_ttl"]
+    newts_resource_shard        = var.settings["opennms_newts_resource_shard"]
+    twcs_window_size            = var.settings["twcs_window_size"]
+    twcs_window_unit            = var.settings["twcs_window_unit"]
+    twcs_exp_sstable_check_freq = var.settings["twcs_exp_sstable_check_freq"]
+    use_redis                   = var.settings["opennms_cache_use_redis"]
   }
 }
 

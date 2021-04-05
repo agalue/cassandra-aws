@@ -97,10 +97,10 @@ resource "aws_security_group" "opennms" {
   }
 
   ingress {
-    from_port   = 18980
-    to_port     = 18980
+    from_port   = 61616
+    to_port     = 61616
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

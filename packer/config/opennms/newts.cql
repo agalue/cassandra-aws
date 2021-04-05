@@ -1,6 +1,6 @@
-CREATE KEYSPACE newts WITH replication = {'class' : 'NetworkTopologyStrategy', 'DC1' : 2 };
+CREATE KEYSPACE IF NOT EXISTS newts WITH replication = {'class' : 'NetworkTopologyStrategy', 'DC1' : 2 };
 
-CREATE TABLE newts.samples (
+CREATE TABLE IF NOT EXISTS newts.samples (
   context text,
   partition int,
   resource text,
@@ -17,7 +17,7 @@ CREATE TABLE newts.samples (
 } AND gc_grace_seconds = 604800
   AND read_repair_chance = 0;
 
-CREATE TABLE newts.terms (
+CREATE TABLE IF NOT EXISTS newts.terms (
   context text,
   field text,
   value text,
@@ -25,7 +25,7 @@ CREATE TABLE newts.terms (
   PRIMARY KEY((context, field, value), resource)
 );
 
-CREATE TABLE newts.resource_attributes (
+CREATE TABLE IF NOT EXISTS newts.resource_attributes (
   context text,
   resource text,
   attribute text,
@@ -33,7 +33,7 @@ CREATE TABLE newts.resource_attributes (
   PRIMARY KEY((context, resource), attribute)
 );
 
-CREATE TABLE newts.resource_metrics (
+CREATE TABLE IF NOT EXISTS newts.resource_metrics (
   context text,
   resource text,
   metric_name text,

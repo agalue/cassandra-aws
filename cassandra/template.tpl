@@ -5,6 +5,7 @@
 
 hostname=${hostname}
 cluster_name=${cluster_name}
+snitch=${snitch}
 datacenter=${datacenter}
 rack=${rack}
 seed_name=${seed_name}
@@ -139,7 +140,7 @@ do
   sed -r -i "/seeds/s/127.0.0.1/$seed_name/" $conf_file
   sed -r -i "/listen_address/s/localhost/$ip/" $conf_file
   sed -r -i "/rpc_address/s/localhost/$ip/" $conf_file
-  sed -r -i "/endpoint_snitch/s/SimpleSnitch/GossipingPropertyFileSnitch/" $conf_file
+  sed -r -i "/endpoint_snitch/s/SimpleSnitch/$snitch/" $conf_file
   sed -r -i "s|hints_directory: .*|hints_directory: $data_dir/hints|" $conf_file
   sed -r -i "s|commitlog_directory: .*|commitlog_directory: $data_dir/commitlog|" $conf_file
   sed -r -i "s|saved_caches_directory: .*|saved_caches_directory: $data_dir/saved_caches|" $conf_file
@@ -163,13 +164,13 @@ do
 
   # Disable CMSGC
   ToDisable=(UseParNewGC UseConcMarkSweepGC CMSParallelRemarkEnabled SurvivorRatio MaxTenuringThreshold CMSInitiatingOccupancyFraction UseCMSInitiatingOccupancyOnly CMSWaitDuration CMSParallelInitialMarkEnabled CMSEdenChunksRecordAlways CMSClassUnloadingEnabled)
-  for entry in "${ToDisable[@]}"; do
+  for entry in "$${ToDisable[@]}"; do
     sed -r -i "/$entry/s/-XX/#-XX/" $jvm_file
   done
 
   # Enable G1GC
   ToEnable=(UseG1GC G1RSetUpdatingPauseTimePercent MaxGCPauseMillis InitiatingHeapOccupancyPercent ParallelGCThreads)
-  for entry in "${ToEnable[@]}"; do
+  for entry in "$${ToEnable[@]}"; do
     sed -r -i "/$entry/s/#-XX/-XX/" $jvm_file
   done
 

@@ -56,6 +56,10 @@ variable "cluster_name" {
   type = string
 }
 
+variable "snitch" {
+  type = string
+}
+
 variable "datacenter" {
   type = string
 }

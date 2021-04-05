@@ -84,16 +84,24 @@ variable "settings" {
 
   default = {
     cassandra_instance_type      = "m4.10xlarge"
-    cassandra_seed               = "172.17.1.21"
+    cassandra_seed               = "172.17.1.21" # First instance from first rack
     cassandra_cluster_name       = "Production"
     cassandra_datacenter_name    = "Main"
     cassandra_volume_size        = 200
     cassandra_instance_heap_size = 16384
     cassandra_replication_factor = 3
+    cassandra_snitch             = "GossipingPropertyFileSnitch" # Do not change
+
+    twcs_window_size             = 7
+    twcs_window_unit             = "DAYS"
+    twcs_exp_sstable_check_freq  = 86400
+
     opennms_instance_type        = "c5.9xlarge"
     opennms_private_ip           = "172.17.1.100"
     opennms_cache_max_entries    = 2000000
     opennms_ring_buffer_size     = 4194304
+    opennms_newts_ttl            = 31540000
+    opennms_newts_resource_shard = 604800
     opennms_cache_use_redis      = false
   }
 }
