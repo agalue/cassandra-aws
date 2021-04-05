@@ -55,7 +55,7 @@ variable "public_subnet_cidr" {
 # There are going to be 3 instances per server/module.
 # Therefore, the total time to wait per server is 180sec (delay).
 variable "cassandra_servers" {
-  description = "Servers with multiple Cassandra instances (rach acting as a rack)"
+  description = "Servers with multiple Cassandra instances (each acting as a rack)"
   type        = map
 
   default = {
@@ -87,11 +87,12 @@ variable "settings" {
     cassandra_seed               = "172.17.1.21" # First instance from first rack
     cassandra_cluster_name       = "Production"
     cassandra_datacenter_name    = "Main"
-    cassandra_volume_size        = 200
-    cassandra_instance_heap_size = 16384
-    cassandra_replication_factor = 3
+    cassandra_volume_size        = 200 # In GB
+    cassandra_instance_heap_size = 16384 # In MB
+    cassandra_replication_factor = 3 # Should be less than total racks (or servers)
     cassandra_snitch             = "GossipingPropertyFileSnitch" # Do not change
 
+    # Should be consistent with opennms_newts_ttl
     twcs_window_size             = 7
     twcs_window_unit             = "DAYS"
     twcs_exp_sstable_check_freq  = 86400
@@ -100,8 +101,8 @@ variable "settings" {
     opennms_private_ip           = "172.17.1.100"
     opennms_cache_max_entries    = 2000000
     opennms_ring_buffer_size     = 4194304
-    opennms_newts_ttl            = 31540000
-    opennms_newts_resource_shard = 604800
+    opennms_newts_ttl            = 31540000 # In Seconds
+    opennms_newts_resource_shard = 604800 # In Seconds
     opennms_cache_use_redis      = false
   }
 }
