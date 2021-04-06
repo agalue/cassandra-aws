@@ -1,7 +1,7 @@
 {
   "variables": {
     "region": "us-east-2",
-    "source_ami": "ami-03d64741867e7bb9",
+    "source_ami": "ami-03d64741867e7bb94",
     "app_name": "OpenNMS Horizon",
     "environment": "Test",
     "department": "Support"
