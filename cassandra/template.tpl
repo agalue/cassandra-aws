@@ -226,7 +226,7 @@ systemctl daemon-reload
 systemctl restart rsyslog
 for i in `seq 1 $num_instances`
 do
-  echo "### Starting instance $i..."
+  echo "### Starting instance $i at $(date)..."
   systemctl enable cassandra3@node$i
   systemctl start cassandra3@node$i
   sleep $instance_delay
