@@ -27,7 +27,7 @@ echo "### Installing OpenNMS Dependencies from stable repository..."
 
 sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 sudo rpm --import /etc/yum.repos.d/opennms-repo-stable-rhel8.gpg
-sudo yum install -y -q jicmp jicmp6 jrrd jrrd2 rrdtool 'perl(LWP)' 'perl(XML::Twig)'
+sudo yum install -y -q jicmp jicmp6 jrrd jrrd2 rrdtool
 
 echo "### Installing OpenNMS $onms_version from the $onms_repo repository..."
 
