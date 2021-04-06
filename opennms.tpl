@@ -56,9 +56,10 @@ if [ "$mem_in_mb" -gt "30720" ]; then
   mem_in_mb="30720"
 fi
 
-sed -r -i "/JAVA_HEAP_SIZE/s/=.*/=$mem_in_mb" $opennms_etc/opennms.conf
-sed -r -i "/GCThreads/s/=.*/=$half_of_cores\"" $opennms_etc/opennms.conf
-sed -r -i "/rmi.server.hostname/s/=.*/=$hostname\"" $opennms_etc/opennms.conf
+ipaddress=$(ifconfig eth0 | grep 'inet[^6]' | awk '{print $2}')
+sed -r -i "/JAVA_HEAP_SIZE/s/=.*/=$mem_in_mb/" $opennms_etc/opennms.conf
+sed -r -i "/GCThreads/s/=1\"/=$half_of_cores\"/" $opennms_etc/opennms.conf
+sed -r -i "/rmi.server.hostname/s/=.*/=$ipaddress\"/" $opennms_etc/opennms.conf
 
 # External Cassandra
 # For 16 Cores, over 32GB of RAM, and a minimum of 16GB of ONMS Heap size on the OpenNMS server.
