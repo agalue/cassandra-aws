@@ -58,8 +58,8 @@ fi
 
 ipaddress=$(ifconfig eth0 | grep 'inet[^6]' | awk '{print $2}')
 sed -r -i "/JAVA_HEAP_SIZE/s/=.*/=$mem_in_mb/" $opennms_etc/opennms.conf
-sed -r -i "/GCThreads/s/=1\"/=$half_of_cores\"/" $opennms_etc/opennms.conf
-sed -r -i "/rmi.server.hostname/s/=.*/=$ipaddress\"/" $opennms_etc/opennms.conf
+sed -r -i "/GCThreads/s/1/$half_of_cores/" $opennms_etc/opennms.conf
+sed -r -i "/rmi.server.hostname/s/127.0.0.1/$ipaddress/" $opennms_etc/opennms.conf
 
 # External Cassandra
 # For 16 Cores, over 32GB of RAM, and a minimum of 16GB of ONMS Heap size on the OpenNMS server.
