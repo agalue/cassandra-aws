@@ -92,8 +92,11 @@
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
       <parameter key="collection" value="jsr160"/>
-      <parameter key="thresholding-enabled" value="true"/>
       <parameter key="friendly-name" value="opennms-jvm"/>
+      <parameter key="thresholding-enabled" value="true"/>
+      <parameter key="factory" value="PASSWORD-CLEAR"/>
+      <parameter key="username" value="admin"/>
+      <parameter key="password" value="admin"/>
     </service>
     <service name="PostgreSQL" interval="30000" user-defined="false" status="on">
       <parameter key="collection" value="PostgreSQL"/>

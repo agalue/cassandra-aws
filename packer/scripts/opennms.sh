@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
+# Designed for CentOS/RHEL 8
 
 ######### CUSTOMIZED VARIABLES #########
 
@@ -11,14 +12,12 @@ onms_version="-latest-"
 opennms_home=/opt/opennms
 opennms_etc=$opennms_home/etc
 
-echo "### Installing Common Packages..."
+echo "### Installing Redis..."
 
-sudo yum -y -q install haveged redis
-sudo systemctl enable haveged
+sudo yum -y -q install redis
 
 echo "### Installing PostgreSQL 10..."
 
-sudo amazon-linux-extras install postgresql10 -y
 sudo yum install -y -q postgresql-server
 sudo /usr/bin/postgresql-setup --initdb --unit postgresql
 sudo sed -r -i "/^(local|host)/s/(peer|ident)/trust/g" /var/lib/pgsql/data/pg_hba.conf
@@ -26,27 +25,24 @@ sudo systemctl enable postgresql
 
 echo "### Installing OpenNMS Dependencies from stable repository..."
 
-sudo sed -r -i '/name=Amazon Linux 2/a exclude=rrdtool-*' /etc/yum.repos.d/amzn2-core.repo
-sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-sudo rpm --import /etc/yum.repos.d/opennms-repo-stable-rhel7.gpg
+sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+sudo rpm --import /etc/yum.repos.d/opennms-repo-stable-rhel8.gpg
 sudo yum install -y -q jicmp jicmp6 jrrd jrrd2 rrdtool 'perl(LWP)' 'perl(XML::Twig)'
 
-echo "### Installing OpenNMS..."
+echo "### Installing OpenNMS $onms_version from the $onms_repo repository..."
 
 if [ "$onms_repo" != "stable" ]; then
   echo "### Installing OpenNMS $onms_repo Repository..."
   sudo yum remove -y -q opennms-repo-stable
-  sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel7.noarch.rpm
-  sudo rpm --import /etc/yum.repos.d/opennms-repo-$onms_repo-rhel7.gpg
+  sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel8.noarch.rpm
+  sudo rpm --import /etc/yum.repos.d/opennms-repo-$onms_repo-rhel8.gpg
 fi
 
-if [ "$onms_version" == "-latest-" ]; then
-  echo "### Installing latest OpenNMS from $onms_repo Repository..."
-  sudo yum install -y -q opennms-core opennms-webapp-jetty opennms-webapp-hawtio
-else
-  echo "### Installing OpenNMS version $onms_version from $onms_repo Repository..."
-  sudo yum install -y -q opennms-core-$onms_version opennms-webapp-jetty-$onms_version opennms-webapp-hawtio-$onms_version
+suffix=""
+if [ "$onms_version" != "-latest-" ]; then
+  suffix="-$onms_version"
 fi
+sudo yum install -y -q opennms-core$suffix opennms-webapp-jetty$suffix opennms-webapp-hawtio$suffix
 
 echo "### Initializing GIT at $opennms_etc..."
 
@@ -72,12 +68,6 @@ enabled=false
 acknowledged-by=admin
 acknowledged-at=Mon Jan 01 00\:00\:00 EDT 2018
 EOF
-
-# Fixing default JMX credentials for Cassandra
-sudo sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/poller-configuration.xml
-sudo sed -r -i 's/cassandra-password/cassandra/g' $opennms_etc/poller-configuration.xml
-sudo sed -r -i 's/cassandra-username/cassandra/g' $opennms_etc/collectd-configuration.xml
-sudo sed -r -i 's/cassandra-password/cassandra/g' $opennms_etc/collectd-configuration.xml
 
 # RRD Settings
 cat <<EOF | sudo tee $opennms_etc/opennms.properties.d/rrd.properties

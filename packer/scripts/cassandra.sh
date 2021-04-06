@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
+# Designed for CentOS/RHEL 8
 
 ######### CUSTOMIZED VARIABLES #########
 

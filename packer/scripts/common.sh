@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
+# Designed for CentOS/RHEL 8
 
 ######### CUSTOMIZED VARIABLES #########
 
@@ -17,10 +18,14 @@ sudo ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 echo "### Installing common packages..."
 
 sudo yum -y -q update
-sudo amazon-linux-extras install epel -y
-sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree telnet curl nmon
+sudo yum -y -q install epel-release
+sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree telnet curl nmon haveged
 
-echo "### Configuring Net-SNMP..."
+echo "### Enabling haveged..."
+
+sudo systemctl enable haveged
+
+echo "### Configuring and enabling Net-SNMP..."
 
 snmp_cfg=/etc/snmp/snmpd.conf
 sudo cp $snmp_cfg $snmp_cfg.original
