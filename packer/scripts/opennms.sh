@@ -14,9 +14,9 @@ onms_version="-latest-"
 opennms_home=/opt/opennms
 opennms_etc=$opennms_home/etc
 
-echo "### Installing Redis..."
+echo "### Installing Dependencies..."
 
-sudo dnf -y install redis
+sudo dnf -y install redis python2
 
 echo "### Installing PostgreSQL 10..."
 
