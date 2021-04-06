@@ -38,13 +38,13 @@ variable "aws_ebs_device_names" {
   type = list(string)
 
   default = [
-    "/dev/xvdh",
-    "/dev/xvdi",
-    "/dev/xvdk",
-    "/dev/xvdl",
-    "/dev/xvdm",
-    "/dev/xvdn",
-    "/dev/xvdo",
+    "/dev/sdh",
+    "/dev/sdi",
+    "/dev/sdk",
+    "/dev/sdl",
+    "/dev/sdm",
+    "/dev/sdn",
+    "/dev/sdo",
   ]
 }
 
