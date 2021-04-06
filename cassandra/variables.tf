@@ -42,6 +42,9 @@ variable "aws_ebs_device_names" {
     "/dev/xvdi",
     "/dev/xvdk",
     "/dev/xvdl",
+    "/dev/xvdm",
+    "/dev/xvdn",
+    "/dev/xvdo",
   ]
 }
 
