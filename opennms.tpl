@@ -109,9 +109,9 @@ $opennms_home/bin/install -dis
 
 echo "### Waiting for Cassandra..."
 
-until nodetool -h $cassandra_seed status | grep $cassandra_seed | grep -q "UN";
-do
-  sleep 10
+until echo -n > /dev/tcp/$cassandra_seed/9042; do
+  echo "### seed unavailable - sleeping"
+  sleep 5
 done
 
 echo "### Creating Newts keyspace..."
