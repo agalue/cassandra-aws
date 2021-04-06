@@ -2,6 +2,8 @@
 # Author: Alejandro Galue <agalue@opennms.org>
 # Designed for CentOS/RHEL 8
 
+set -e
+
 ######### CUSTOMIZED VARIABLES #########
 
 onms_repo="stable"
@@ -14,35 +16,33 @@ opennms_etc=$opennms_home/etc
 
 echo "### Installing Redis..."
 
-sudo yum -y -q install redis
+sudo dnf -y install redis
 
 echo "### Installing PostgreSQL 10..."
 
-sudo yum install -y -q postgresql-server
+sudo dnf install -y postgresql-server
 sudo /usr/bin/postgresql-setup --initdb --unit postgresql
 sudo sed -r -i "/^(local|host)/s/(peer|ident)/trust/g" /var/lib/pgsql/data/pg_hba.conf
 sudo systemctl enable postgresql
 
-echo "### Installing OpenNMS Dependencies from stable repository..."
+echo "### Installing OpenNMS Dependencies from the stable repository..."
 
-sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+sudo dnf install -y http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 sudo rpm --import /etc/yum.repos.d/opennms-repo-stable-rhel8.gpg
-sudo yum install -y -q jicmp jicmp6 jrrd jrrd2 rrdtool
+sudo dnf install -y jicmp jicmp6 jrrd jrrd2 rrdtool
 
 echo "### Installing OpenNMS $onms_version from the $onms_repo repository..."
 
 if [ "$onms_repo" != "stable" ]; then
-  echo "### Installing OpenNMS $onms_repo Repository..."
-  sudo yum remove -y -q opennms-repo-stable
-  sudo yum install -y -q http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel8.noarch.rpm
+  sudo dnf remove -y opennms-repo-stable
+  sudo dnf install -y http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel8.noarch.rpm
   sudo rpm --import /etc/yum.repos.d/opennms-repo-$onms_repo-rhel8.gpg
 fi
-
 suffix=""
 if [ "$onms_version" != "-latest-" ]; then
   suffix="-$onms_version"
 fi
-sudo yum install -y -q opennms-core$suffix opennms-webapp-jetty$suffix opennms-webapp-hawtio$suffix
+sudo dnf install -y opennms-core$suffix opennms-webapp-jetty$suffix opennms-webapp-hawtio$suffix
 
 echo "### Initializing GIT at $opennms_etc..."
 
@@ -60,22 +60,8 @@ src_dir=/tmp/sources
 sudo chown -R root:root $src_dir/
 sudo rsync -avr $src_dir/ /opt/opennms/etc/
 
-echo "### Applying common configuration changes..."
+echo "### Fix logging..."
 
-# Disabling data choices
-cat <<EOF | sudo tee $opennms_etc/org.opennms.features.datachoices.cfg
-enabled=false
-acknowledged-by=admin
-acknowledged-at=Mon Jan 01 00\:00\:00 EDT 2018
-EOF
-
-# RRD Settings
-cat <<EOF | sudo tee $opennms_etc/opennms.properties.d/rrd.properties
-org.opennms.rrd.storeByGroup=true
-org.opennms.rrd.storeByForeignSource=true
-EOF
-
-# Logging
 sudo sed -r -i 's/value="DEBUG"/value="WARN"/' $opennms_etc/log4j2.xml
 sudo sed -r -i '/manager/s/WARN/DEBUG/' $opennms_etc/log4j2.xml
 
@@ -86,45 +72,14 @@ sudo cp $webxml $webxml.bak
 sudo sed -r -i '/[<][!]--/{$!{N;s/[<][!]--\n  ([<]filter-mapping)/\1/}}' $webxml
 sudo sed -r -i '/nrt/{$!{N;N;s/(nrt.*\n  [<]\/filter-mapping[>])\n  --[>]/\1/}}' $webxml
 
-echo "### Configuring JVM..."
+echo "### Selecting Java 11..."
 
-cat <<EOF | sudo tee $opennms_etc/opennms.conf
-START_TIMEOUT=0
-JAVA_HEAP_SIZE=2048
-MAXIMUM_FILE_DESCRIPTORS=204800
+sudo $opennms_home/bin/runjava -S /usr/lib/jvm/java-11/bin/java
 
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Djava.net.preferIPv4Stack=true"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Xlog:gc:/opt/opennms/logs/gc.log"
+echo "### Initializing the database..."
 
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+UseStringDeduplication"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+UseG1GC"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:G1RSetUpdatingPauseTimePercent=5"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:MaxGCPauseMillis=500"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:InitiatingHeapOccupancyPercent=70"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:ParallelGCThreads=1"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:ConcGCThreads=1"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+ParallelRefProcEnabled"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+AlwaysPreTouch"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+UseTLAB"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:+ResizeTLAB"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -XX:-UseBiasedLocking"
+sudo systemctl start postgresql
+sleep 5
+sudo $opennms_home/bin/install -dis
 
-# Configure Remote JMX
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.rmi.port=18980"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.local.only=false"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
-
-# Listen on all interfaces
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.serverHost=0.0.0.0"
-
-# Accept remote RMI connections on this interface
-ADDITIONAL_MANAGER_OPTIONS="\$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=127.0.0.1"
-EOF
-
-# JMX Groups
-cat <<EOF | sudo tee $opennms_etc/jmxremote.access
-admin readwrite
-jmx   readonly
-EOF
+echo "### Done."

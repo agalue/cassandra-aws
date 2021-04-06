@@ -102,11 +102,6 @@ for f in "$${files[@]}"; do
   fi
 done
 
-echo "### Running OpenNMS install script..."
-
-$opennms_home/bin/runjava -S /usr/java/latest/bin/java
-$opennms_home/bin/install -dis
-
 echo "### Waiting for Cassandra..."
 
 until echo -n > /dev/tcp/$cassandra_seed/9042; do

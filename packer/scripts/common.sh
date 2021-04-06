@@ -2,6 +2,8 @@
 # Author: Alejandro Galue <agalue@opennms.org>
 # Designed for CentOS/RHEL 8
 
+set -e
+
 ######### CUSTOMIZED VARIABLES #########
 
 timezone="America/New_York"
@@ -17,9 +19,9 @@ sudo ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 
 echo "### Installing common packages..."
 
-sudo yum -y -q update
-sudo yum -y -q install epel-release
-sudo yum -y -q install jq net-snmp net-snmp-utils git pytz dstat htop nmap-ncat tree telnet curl nmon haveged
+sudo dnf -y update
+sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo dnf -y install jq net-snmp net-snmp-utils git dstat htop nmap-ncat tree telnet curl nmon haveged
 
 echo "### Enabling haveged..."
 

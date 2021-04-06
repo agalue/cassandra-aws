@@ -2,6 +2,8 @@
 # Author: Alejandro Galue <agalue@opennms.org>
 # Designed for CentOS/RHEL 8
 
+set -e
+
 ######### CUSTOMIZED VARIABLES #########
 
 repo_version="311x"
@@ -21,4 +23,6 @@ gpgkey=https://www.apache.org/dist/cassandra/KEYS
 EOF
 sudo mv $tmp_repo /etc/yum.repos.d
 
-sudo yum install -y -q cassandra cassandra-tools
+sudo dnf install -y cassandra cassandra-tools
+
+echo "### Done."
