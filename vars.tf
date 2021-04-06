@@ -54,6 +54,7 @@ variable "public_subnet_cidr" {
 # By default, the cassandra module waits 60sec before start each instance.
 # There are going to be 3 instances per server/module.
 # Therefore, the total time to wait per server is 180sec (delay).
+# IP Addresses must be consistent with packer/config/imports/pending/Cassandra.xml
 variable "cassandra_servers" {
   description = "Servers with multiple Cassandra instances (each acting as a rack)"
   type        = map
@@ -68,11 +69,11 @@ variable "cassandra_servers" {
       "iplist": ["172.17.1.31", "172.17.1.32", "172.17.1.33"],
     },
     "cassandra3": {
-      "delay": 320,
+      "delay": 360,
       "iplist": ["172.17.1.41", "172.17.1.42", "172.17.1.43"],
     },
     "cassandra4": {
-      "delay": 500,
+      "delay": 540,
       "iplist": ["172.17.1.51", "172.17.1.52", "172.17.1.53"],
     },
   }
