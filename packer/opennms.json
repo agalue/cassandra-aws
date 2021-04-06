@@ -35,13 +35,6 @@
     },
     {
       "type": "shell",
-      "script": "./scripts/java.sh",
-      "environment_vars": [
-        "USE_LATEST_JAVA=yes"
-      ]
-    },
-    {
-      "type": "shell",
       "script": "./scripts/cassandra.sh"
     },
     {

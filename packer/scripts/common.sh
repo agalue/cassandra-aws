@@ -1,6 +1,5 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
-# Designed for CentOS/RHEL 8
 
 set -e
 
@@ -19,9 +18,14 @@ sudo ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 
 echo "### Installing common packages..."
 
-sudo dnf -y update
-sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-sudo dnf -y install jq net-snmp net-snmp-utils git dstat htop nmap-ncat tree telnet curl nmon haveged
+sudo yum -y update
+. /etc/os-release
+if [ "$ID" == "amzn" ]; then
+  sudo amazon-linux-extras install epel -y
+else
+  sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+fi
+sudo yum -y install jq vim net-snmp net-snmp-utils git dstat htop nmap-ncat tree telnet curl nmon haveged
 
 echo "### Enabling haveged..."
 

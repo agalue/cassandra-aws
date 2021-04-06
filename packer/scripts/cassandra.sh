@@ -1,6 +1,5 @@
 #!/bin/bash
 # Author: Alejandro Galue <agalue@opennms.org>
-# Designed for CentOS/RHEL 8
 
 set -e
 
@@ -23,6 +22,7 @@ gpgkey=https://www.apache.org/dist/cassandra/KEYS
 EOF
 sudo mv $tmp_repo /etc/yum.repos.d
 
-sudo dnf install -y cassandra cassandra-tools
+sudo yum install -y java-1.8.0-openjdk-devel
+sudo yum install -y cassandra cassandra-tools
 
 echo "### Done."
