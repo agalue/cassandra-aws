@@ -27,7 +27,7 @@ sudo systemctl enable postgresql
 
 echo "### Installing OpenNMS Dependencies from the stable repository..."
 
-sudo dnf install -y http://dnf.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+sudo dnf install -y http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 sudo rpm --import /etc/dnf.repos.d/opennms-repo-stable-rhel8.gpg
 sudo dnf install -y jicmp jicmp6
 sudo dnf install -y java-11-openjdk-devel
@@ -36,7 +36,7 @@ echo "### Installing OpenNMS $onms_version from the $onms_repo repository..."
 
 if [ "$onms_repo" != "stable" ]; then
   sudo dnf remove -y opennms-repo-stable
-  sudo dnf install -y http://dnf.opennms.org/repofiles/opennms-repo-$onms_repo-rhel8.noarch.rpm
+  sudo dnf install -y http://yum.opennms.org/repofiles/opennms-repo-$onms_repo-rhel8.noarch.rpm
   sudo rpm --import /etc/dnf.repos.d/opennms-repo-$onms_repo-rhel8.gpg
 fi
 suffix=""
