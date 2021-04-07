@@ -25,7 +25,7 @@ if [ "$ID" == "amzn" ]; then
 else
   sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 fi
-sudo yum -y install jq vim net-snmp net-snmp-utils git dstat htop nmap-ncat tree telnet curl nmon haveged
+sudo yum -y install jq vim net-snmp net-snmp-utils git dstat htop nmap-ncat tree telnet curl nmon haveged wget
 
 echo "### Enabling haveged..."
 
