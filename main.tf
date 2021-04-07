@@ -40,6 +40,7 @@ data "template_file" "opennms" {
     ring_buffer_size            = var.settings["opennms_ring_buffer_size"]
     newts_ttl                   = var.settings["opennms_newts_ttl"]
     newts_resource_shard        = var.settings["opennms_newts_resource_shard"]
+    twcs_gc_grace_seconds       = var.settings["twcs_gc_grace_seconds"]
     twcs_window_size            = var.settings["twcs_window_size"]
     twcs_window_unit            = var.settings["twcs_window_unit"]
     twcs_exp_sstable_check_freq = var.settings["twcs_exp_sstable_check_freq"]

@@ -97,6 +97,7 @@ variable "settings" {
     twcs_window_size             = 7
     twcs_window_unit             = "DAYS"
     twcs_exp_sstable_check_freq  = 86400
+    twcs_gc_grace_seconds        = 604800
 
     opennms_instance_type        = "c5.9xlarge"
     opennms_private_ip           = "172.17.1.100"

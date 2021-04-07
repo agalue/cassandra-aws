@@ -13,6 +13,7 @@ ring_buffer_size=${ring_buffer_size}
 use_redis=${use_redis}
 newts_ttl=${newts_ttl}
 newts_resource_shard=${newts_resource_shard}
+twcs_gc_grace_seconds=${twcs_gc_grace_seconds}
 twcs_window_size=${twcs_window_size}
 twcs_window_unit=${twcs_window_unit}
 twcs_exp_sstable_check_freq=${twcs_exp_sstable_check_freq}
@@ -121,6 +122,7 @@ fi
 sed -r -i "/compaction_window_size/s/7/$twcs_window_size/" $newts_cfg
 sed -r -i "/compaction_window_unit/s/DAYS/$twcs_window_unit/" $newts_cfg
 sed -r -i "/expired_sstable_check_frequency_seconds/s/86400/$twcs_exp_sstable_check_freq/" $newts_cfg
+sed -r -i "/gc_grace_seconds/s/604800/$twcs_gc_grace_seconds/" $newts_cfg
 
 cqlsh -f $newts_cfg $cassandra_seed
 
