@@ -32,11 +32,9 @@ aws_access_key_id = XXXXXXXXXXXXXXXXX
 aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-* Install the Terraform binary from [terraform.io](https://www.terraform.io)
+* Install the latest Terraform binary from [terraform.io](https://www.terraform.io). Version 0.12.x or newer required.
 
-> *NOTE*: The templates require having Terraform version 0.12.x or newer installed on your machine.
-
-* Install the Packer binary from [packer.io](https://www.packer.io)
+* Install the latest Packer binary from [packer.io](https://www.packer.io)
 
 * If necessary, tweak the versions on the packer initialization scripts located at `packer/scripts`.
 
