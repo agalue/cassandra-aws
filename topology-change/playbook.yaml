@@ -1,0 +1,6 @@
+# @author agalue@opennms.com
+---
+- import_playbook: playbook-reconfigure.yaml
+- import_playbook: playbook-stop.yaml
+- import_playbook: playbook-start.yaml
+- import_playbook: playbook-fix-namespaces.yaml

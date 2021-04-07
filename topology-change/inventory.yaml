@@ -1,0 +1,41 @@
+# @author agalue@opennms.com
+---
+all:
+  vars:
+    ansible_user: ec2-user
+    ansible_port: 22
+    dc: DC1
+  children:
+    opennms:
+      hosts:
+        main: # Assumes Ansible runs from the OpenNMS server
+          ansible_host: localhost
+    seeds:
+      hosts:
+        172.17.1.21:
+    cassandra:
+      hosts:
+        172.17.1.21:
+          rack: Rack1
+          instances:
+            node1: 172.17.1.21
+            node2: 172.17.1.22
+            node3: 172.17.1.23
+        172.17.1.31:
+          rack: Rack2
+          instances:
+            node1: 172.17.1.31
+            node2: 172.17.1.32
+            node3: 172.17.1.33
+        172.17.1.41:
+          rack: Rack3
+          instances:
+            node1: 172.17.1.41
+            node2: 172.17.1.42
+            node3: 172.17.1.43
+        172.17.1.51:
+          rack: Rack4
+          instances:
+            node1: 172.17.1.51
+            node2: 172.17.1.52
+            node3: 172.17.1.53

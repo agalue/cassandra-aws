@@ -1,0 +1,14 @@
+# @author agalue@opennms.com
+---
+- name: Reconfigure keyspaces
+  hosts: seeds
+  tasks:
+  - name: Copy CQL
+    template:
+      src: 'alter-keyspace.j2'
+      dest: '/tmp/alter.cql'
+    vars:
+      keyspace: newts
+      replication_factor: 2
+  - name: Alter keyspace
+    command: 'cqlsh -f /tmp/alter.cql {{ ansible_host }}'

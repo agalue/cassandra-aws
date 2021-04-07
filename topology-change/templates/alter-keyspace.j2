@@ -1,0 +1,1 @@
+ALTER KEYSPACE {{ keyspace }} WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', '{{ dc }}' : {{ replication_factor }}};

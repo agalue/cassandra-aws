@@ -1,0 +1,22 @@
+# @author agalue@opennms.com
+---
+- name: Stop OpenNMS
+  hosts: opennms
+  become: true
+  tasks:
+  - name: 'Stop processes'
+    systemd:
+      name: 'opennms'
+      state: stopped
+
+- name: Stop Cassandra in sequence
+  hosts: cassandra
+  become: true
+  order: sorted
+  serial: 1
+  tasks:
+  - name: 'Stop processes'
+    systemd:
+      name: 'cassandra3@{{ item.key }}'
+      state: stopped
+    loop: '{{ instances | dict2items }}'
