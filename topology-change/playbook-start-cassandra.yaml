@@ -1,18 +1,11 @@
 # @author agalue@opennms.com
 ---
-- name: 'Start Cassandra process {{ item.key }}'
-  service:
-    name: 'cassandra3@{{ item.key }}'
-    state: started
-- name: 'Wait for {{ item.value }} to join the cluster'
-  shell: 'nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
-  changed_when: False
-  register: result
-  until: result.stdout is regex("^UN.*")
-  delay: 10
-  retries: 10
-- name: 'Remove temporary settings from {{ item.key }}'
-  lineinfile:
-    path: '/etc/cassandra/{{ item.key }}/jvm.options'
-    regexp: '^-Dcassandra.ignore.*'
-    state: absent
+- name: Start Cassandra in sequence
+  hosts: cassandra
+  become: true
+  order: sorted
+  serial: 1
+  tasks:
+  - name: Start Cassandra in sequence
+    loop: '{{ instances | dict2items }}'
+    include_tasks: 'tasks-start-cassandra.yaml'
