@@ -18,6 +18,7 @@
       replace: '\1 GossipingPropertyFileSnitch'
     loop: '{{ instances | dict2items }}'
   - name: Ensure ignore_dc is in place
+    when: dc != "datacenter1"
     lineinfile:
       path: '/etc/cassandra/{{ item.key }}/jvm.options'
       regexp: '^-Dcassandra.ignore_dc='

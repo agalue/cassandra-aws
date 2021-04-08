@@ -3,12 +3,39 @@
 - name: Reconfigure keyspaces
   hosts: seeds
   tasks:
-  - name: Copy CQL
+  - name: Copy CQL for newts
     template:
       src: 'alter-keyspace.j2'
-      dest: '/tmp/alter.cql'
+      dest: '/tmp/newts.cql'
     vars:
       keyspace: newts
       replication_factor: 2
-  - name: Alter keyspace
-    command: 'cqlsh -f /tmp/alter.cql {{ ansible_host }}'
+  - name: Alter keyspace newts
+    command: 'cqlsh -f /tmp/newts.cql {{ ansible_host }}'
+  - name: Copy CQL for system_auth
+    template:
+      src: 'alter-keyspace.j2'
+      dest: '/tmp/system_auth.cql'
+    vars:
+      keyspace: system_auth
+      replication_factor: 1
+  - name: Alter keyspace system_auth
+    command: 'cqlsh -f /tmp/system_auth.cql {{ ansible_host }}'
+  - name: Copy CQL for system_distributed
+    template:
+      src: 'alter-keyspace.j2'
+      dest: '/tmp/system_distributed.cql'
+    vars:
+      keyspace: system_distributed
+      replication_factor: 3
+  - name: Alter keyspace system_distributed
+    command: 'cqlsh -f /tmp/system_distributed.cql {{ ansible_host }}'
+  - name: Copy CQL for system_traces
+    template:
+      src: 'alter-keyspace.j2'
+      dest: '/tmp/system_traces.cql'
+    vars:
+      keyspace: system_traces
+      replication_factor: 1
+  - name: Alter keyspace system_traces
+    command: 'cqlsh -f /tmp/system_traces.cql {{ ansible_host }}'
