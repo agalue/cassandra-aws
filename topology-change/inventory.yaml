@@ -9,7 +9,7 @@ all:
     opennms:
       hosts:
         main: # Assumes Ansible runs from the OpenNMS server
-          ansible_host: localhost
+          ansible_connection: local
     seeds:
       hosts:
         172.17.1.21:
