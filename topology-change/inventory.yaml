@@ -16,25 +16,25 @@ all:
     cassandra:
       hosts:
         172.17.1.21:
-          rack: Rack1
+          rack: rack1
           instances:
             node1: 172.17.1.21
             node2: 172.17.1.22
             node3: 172.17.1.23
         172.17.1.31:
-          rack: Rack2
+          rack: rack2
           instances:
             node1: 172.17.1.31
             node2: 172.17.1.32
             node3: 172.17.1.33
         172.17.1.41:
-          rack: Rack3
+          rack: rack3
           instances:
             node1: 172.17.1.41
             node2: 172.17.1.42
             node3: 172.17.1.43
         172.17.1.51:
-          rack: Rack4
+          rack: rack4
           instances:
             node1: 172.17.1.51
             node2: 172.17.1.52
