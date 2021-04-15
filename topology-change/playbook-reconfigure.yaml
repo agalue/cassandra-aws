@@ -5,18 +5,21 @@
   become: true
   order: sorted
   tasks:
+
   - name: Set concurrent_compactors
     replace:
       path: '/etc/cassandra/{{ item.key }}/cassandra.yaml'
       regexp: '^.*(concurrent_compactors:).*'
       replace: '\1 {{ ansible_processor_cores }}'
     loop: '{{ instances | dict2items }}'
+
   - name: Update snitch
     replace:
       path: '/etc/cassandra/{{ item.key }}/cassandra.yaml'
       regexp: '^.*(endpoint_snitch:).*'
       replace: '\1 GossipingPropertyFileSnitch'
     loop: '{{ instances | dict2items }}'
+
   - name: Ensure ignore_dc is in place
     when: dc != "datacenter1"
     lineinfile:
@@ -24,17 +27,20 @@
       regexp: '^-Dcassandra.ignore_dc='
       line: '-Dcassandra.ignore_dc=true'
     loop: '{{ instances | dict2items }}'
+
   - name: Ensure ignore_rack is in place
     lineinfile:
       path: '/etc/cassandra/{{ item.key }}/jvm.options'
       regexp: '^-Dcassandra.ignore_rack='
       line: '-Dcassandra.ignore_rack=true'
     loop: '{{ instances | dict2items }}'
+
   - name: Generate cassandra-rackdc.properties
     template:
       src: cassandra-rackdc.j2
       dest: '/etc/cassandra/{{ item.key }}/cassandra-rackdc.properties'
     loop: '{{ instances | dict2items }}'
+
   - name: Remove cassandra-topology.properties
     file:
       path: '/etc/cassandra/{{ item.key }}/cassandra-topology.properties'
