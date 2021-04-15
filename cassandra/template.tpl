@@ -78,6 +78,8 @@ do
   done
   # Log Directory
   mkdir -p $log_location/node$i
+  # SNMP Monitoring
+  echo "disk $location" >> /etc/snmp/snmpd.conf
 done
 chown -R cassandra:cassandra /data
 chown -R cassandra:cassandra $log_location
@@ -229,5 +231,6 @@ do
   echo "### Starting instance $i at $(date)..."
   systemctl enable cassandra3@node$i
   systemctl start cassandra3@node$i
+  systemctl restart snmpd
   sleep $instance_delay
 done
