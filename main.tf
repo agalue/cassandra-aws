@@ -32,6 +32,7 @@ data "template_file" "opennms" {
 
   vars = {
     hostname                    = "opennms"
+    cassandra_cluster           = var.settings["cassandra_cluster_name"]
     cassandra_seed              = var.settings["cassandra_seed"]
     cassandra_snitch            = var.settings["cassandra_snitch"]
     cassandra_rf                = var.settings["cassandra_replication_factor"]

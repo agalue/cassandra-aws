@@ -4,6 +4,7 @@
 # AWS Template Variables
 
 hostname=${hostname}
+cassandra_cluster=${cassandra_cluster}
 cassandra_seed=${cassandra_seed}
 cassandra_snitch=${cassandra_snitch}
 cassandra_rf=${cassandra_rf}
@@ -125,6 +126,19 @@ sed -r -i "/expired_sstable_check_frequency_seconds/s/86400/$twcs_exp_sstable_ch
 sed -r -i "/gc_grace_seconds/s/604800/$twcs_gc_grace_seconds/" $newts_cfg
 
 cqlsh -f $newts_cfg $cassandra_seed
+
+echo "### Configuring Reaper..."
+
+$reaper_cfg=/etc/cassandra-reaper/cassandra-reaper.yaml
+sed -r -i "/repairParallelism/s/: .*/: INCREMENTAL/" $reaper_cfg
+sed -r -i "/clusterName/s/: .*/: '$cassandra_cluster'/" $reaper_cfg
+sed -r -i "/contactPoints/s/: .*/: ['$cassandra_seed']/" $reaper_cfg
+echo <<EOF > /etc/cassandra-reaper/cassandra-reaper.cql
+CREATE KEYSPACE IF NOT EXISTS reaper_db WITH replication = {
+  'class' : 'NetworkTopologyStrategy',
+  '$cassandra_dc' : $cassandra_rf
+};
+EOF
 
 echo "### Starting OpenNMS..."
 
