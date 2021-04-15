@@ -81,3 +81,13 @@ resource "aws_instance" "opennms" {
   }
 }
 
+output "opennms" {
+  value = aws_instance.opennms.public_ip
+}
+
+output "cassandra" {
+  value = [
+    for instance in module.cassandra:
+    instance.public_ip
+  ]
+}
