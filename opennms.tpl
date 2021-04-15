@@ -130,7 +130,7 @@ cqlsh -f $newts_cfg $cassandra_seed
 echo "### Configuring Reaper..."
 
 $reaper_cfg=/etc/cassandra-reaper/cassandra-reaper.yaml
-sed -r -i "/repairParallelism/s/: .*/: INCREMENTAL/" $reaper_cfg
+sed -r -i "/repairParallelism/s/: .*/: SEQUENTIAL/" $reaper_cfg
 sed -r -i "/clusterName/s/: .*/: '$cassandra_cluster'/" $reaper_cfg
 sed -r -i "/contactPoints/s/: .*/: ['$cassandra_seed']/" $reaper_cfg
 echo <<EOF > /etc/cassandra-reaper/cassandra-reaper.cql
