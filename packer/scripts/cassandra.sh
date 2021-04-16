@@ -32,22 +32,22 @@ echo  "### Creating reaper config using Cassandra as backend..."
 
 cat <<EOF | sudo tee /etc/cassandra-reaper/cassandra-reaper.yaml
 segmentCountPerNode: 64
-repairParallelism: DATACENTER_AWARE
-repairIntensity: 0.9
+repairParallelism: SEQUENTIAL
+repairIntensity: 0.7
 scheduleDaysBetween: 7
 repairRunThreadCount: 15
 hangingRepairTimeoutMins: 30
 storageType: cassandra
 enableCrossOrigin: true
 incrementalRepair: false
-blacklistTwcsTables: true
+blacklistTwcsTables: false
 enableDynamicSeedList: true
 repairManagerSchedulingIntervalSeconds: 10
 jmxConnectionTimeoutInSeconds: 5
 useAddressTranslator: false
 maxParallelRepairs: 10
-# purgeRecordsAfterInDays: 30
-# numberOfRunsToKeepPerUnit: 10
+purgeRecordsAfterInDays: 30
+numberOfRunsToKeepPerUnit: 10
 datacenterAvailability: ALL
 jmxAuth:
   username: cassandra
