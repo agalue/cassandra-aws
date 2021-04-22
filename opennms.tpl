@@ -133,6 +133,8 @@ reaper_cfg=/etc/cassandra-reaper/cassandra-reaper.yaml
 sed -r -i "/repairParallelism/s/: .*/: SEQUENTIAL/" $reaper_cfg
 sed -r -i "/clusterName/s/: .*/: '$cassandra_cluster'/" $reaper_cfg
 sed -r -i "/contactPoints/s/: .*/: ['$cassandra_seed']/" $reaper_cfg
+sed -r -i "/repairIntensity/s/: .*/: 1.0/" $reaper_cfg
+
 cat <<EOF > /etc/cassandra-reaper/cassandra-reaper.cql
 CREATE KEYSPACE IF NOT EXISTS reaper_db WITH replication = {
   'class' : 'NetworkTopologyStrategy',
