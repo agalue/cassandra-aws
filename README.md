@@ -38,7 +38,7 @@ aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 * If necessary, tweak the versions on the packer initialization scripts located at `packer/scripts`.
 
-* Tweak the common settings on `vars.tf`, specially `aws_key_name`, `aws_private_key` and `aws_region`.
+* Tweak the common settings on `vars.tf`, specially `aws_key_name`, and `aws_region`.
 
   All the customizable settings are defined on `vars.tf`. Please do not change the other `.tf` files.
 

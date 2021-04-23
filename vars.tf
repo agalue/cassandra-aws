@@ -4,12 +4,7 @@
 
 variable "aws_key_name" {
   description = "AWS Key Name, to access EC2 instances through SSH"
-  default     = "agalue" # For testing purposes only
-}
-
-variable "aws_private_key" {
-  description = "AWS Private Key Full Path"
-  default     = "/Users/agalue/.ssh/agalue.private.aws.us-east-2.pem" # For testing purposes only
+  default     = "agalue" # For testing purposes only (change accordingly)
 }
 
 # Region and AMIs
@@ -17,7 +12,7 @@ variable "aws_private_key" {
 
 variable "aws_region" {
   description = "EC2 Region for the VPC"
-  default     = "us-east-2" # For testing purposes only
+  default     = "us-east-2" # For testing purposes only (change accordingly)
 }
 
 data "aws_ami" "cassandra" {
@@ -99,7 +94,7 @@ variable "settings" {
     twcs_exp_sstable_check_freq  = 86400
     twcs_gc_grace_seconds        = 604800
 
-    opennms_instance_type        = "c5.9xlarge"
+    opennms_instance_type        = "m4.10xlarge"
     opennms_private_ip           = "172.17.1.100"
     opennms_cache_max_entries    = 2000000
     opennms_ring_buffer_size     = 4194304

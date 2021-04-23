@@ -28,13 +28,6 @@ resource "aws_instance" "cassandra" {
 
   vpc_security_group_ids = var.aws_security_groups
 
-  connection {
-    host        = coalesce(self.public_ip, self.private_ip)
-    type        = "ssh"
-    user        = "ec2-user"
-    private_key = file(var.aws_private_key)
-  }
-
   timeouts {
     create = "30m"
     delete = "15m"

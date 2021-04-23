@@ -26,10 +26,6 @@ variable "aws_ebs_volume_size" {
   type = string
 }
 
-variable "aws_private_key" {
-  type = string
-}
-
 variable "aws_tag_name" {
   type = string
 }
