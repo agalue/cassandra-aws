@@ -1,60 +1,62 @@
 # @author agalue@opennms.com
 ---
-- name: 'Decomission Cassandra at {{ item.key }}'
-  shell: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission'
-  changed_when: False
-  delay: 300
-  retries: 4032 # 300 * 4032 ~ 2 weeks
+- name: 'Decomission Cassandra instance {{ item.key }}'
+  command: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission'
 
-- name: Generate cassandra-rackdc.properties
+- name: 'Stop Cassandra instance {{ item.key }}'
+  systemd:
+    name: 'cassandra3@{{ item.key }}'
+    state: stopped
+ 
+- name: 'Generate cassandra-rackdc.properties for {{ item.key }}'
   template:
     src: cassandra-rackdc.j2
     dest: '/etc/cassandra/{{ item.key }}/cassandra-rackdc.properties'
 
-- name: Remove /var/lib/cassandra
+- name: 'Remove /var/lib/cassandra for {{ item.key }}'
   file:
     state: absent
     path: '/var/lib/cassandra/{{ item.key }}'
 
-- name: Initialize /var/lib/cassandra
+- name: 'Initialize /var/lib/cassandra for {{ item.key }}'
   file:
     state: directory
     owner: cassandra
     group: cassandra
     path: '/var/lib/cassandra/{{ item.key }}'
 
-- name: Initialize /var/lib/cassandra/commitlog
+- name: 'Initialize /var/lib/cassandra/commitlog for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/commitlog'
     state: directory
     owner: cassandra
     group: cassandra
 
-- name: Initialize /var/lib/cassandra/data
+- name: 'Initialize /var/lib/cassandra/data for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/data'
     state: directory
     owner: cassandra
     group: cassandra
 
-- name: Initialize /var/lib/cassandra/hints
+- name: 'Initialize /var/lib/cassandra/hints for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/hints'
     state: directory
     owner: cassandra
     group: cassandra
 
-- name: Initialize /var/lib/cassandra/saved_caches
+- name: 'Initialize /var/lib/cassandra/saved_caches for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/saved_caches'
     state: directory
     owner: cassandra
     group: cassandra
 
-- name: 'Restart Cassandra process {{ item.key }}'
+- name: 'Start Cassandra instance {{ item.key }}'
   service:
     name: 'cassandra3@{{ item.key }}'
-    state: restarted
+    state: started
 
 - name: 'Wait for {{ item.value }} to join the cluster'
   shell: 'nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
