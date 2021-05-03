@@ -4,6 +4,7 @@
   hosts: opennms
   become: true
   tasks:
+
   - name: 'Start processes'
     systemd:
       name: 'opennms'

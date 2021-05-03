@@ -1,0 +1,65 @@
+# @author agalue@opennms.com
+---
+- name: 'Decomission Cassandra at {{ item.key }}'
+  shell: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission'
+  changed_when: False
+  delay: 300
+  retries: 4032 # 300 * 4032 ~ 2 weeks
+
+- name: Generate cassandra-rackdc.properties
+  template:
+    src: cassandra-rackdc.j2
+    dest: '/etc/cassandra/{{ item.key }}/cassandra-rackdc.properties'
+
+- name: Remove /var/lib/cassandra
+  file:
+    state: absent
+    path: '/var/lib/cassandra/{{ item.key }}'
+
+- name: Initialize /var/lib/cassandra
+  file:
+    state: directory
+    owner: cassandra
+    group: cassandra
+    path: '/var/lib/cassandra/{{ item.key }}'
+
+- name: Initialize /var/lib/cassandra/commitlog
+  file:
+    path: '/var/lib/cassandra/{{ item.key }}/commitlog'
+    state: directory
+    owner: cassandra
+    group: cassandra
+
+- name: Initialize /var/lib/cassandra/data
+  file:
+    path: '/var/lib/cassandra/{{ item.key }}/data'
+    state: directory
+    owner: cassandra
+    group: cassandra
+
+- name: Initialize /var/lib/cassandra/hints
+  file:
+    path: '/var/lib/cassandra/{{ item.key }}/hints'
+    state: directory
+    owner: cassandra
+    group: cassandra
+
+- name: Initialize /var/lib/cassandra/saved_caches
+  file:
+    path: '/var/lib/cassandra/{{ item.key }}/saved_caches'
+    state: directory
+    owner: cassandra
+    group: cassandra
+
+- name: 'Restart Cassandra process {{ item.key }}'
+  service:
+    name: 'cassandra3@{{ item.key }}'
+    state: restarted
+
+- name: 'Wait for {{ item.value }} to join the cluster'
+  shell: 'nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
+  changed_when: False
+  register: result
+  until: result.stdout is regex("^UN.*")
+  delay: 300
+  retries: 4032 # 300 * 4032 ~ 2 weeks

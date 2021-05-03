@@ -1,12 +1,12 @@
 # @author agalue@opennms.com
 ---
-- name: Start Cassandra in sequence
+- name: Decomission + Boostrap
   hosts: cassandra
   become: true
   order: sorted
   serial: 1
   tasks:
 
-  - name: Start Cassandra in sequence
+  - name: Rebuild Cassandra nodes in sequence
     loop: '{{ instances | dict2items }}'
-    include_tasks: 'tasks-start-cassandra.yaml'
+    include_tasks: 'tasks-decommission-bootstrap.yaml'

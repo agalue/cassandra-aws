@@ -1,7 +1,14 @@
 # @author agalue@opennms.com
 ---
+# Enable Network Topology
 - import_playbook: playbook-reconfigure.yaml
-- import_playbook: playbook-stop.yaml
+# Stop OpenNMS and Cassandra
+- import_playbook: playbook-stop-all.yaml
+# Start Cassandra, one by one
 - import_playbook: playbook-start-cassandra.yaml
+# Fix Namespaces
 - import_playbook: playbook-fix-namespaces.yaml
+# Sart OpenNMS
 - import_playbook: playbook-start-opennms.yaml
+# Decommission, update rack information, boostrap nodes
+- import_playbook: playbook-decommission-bootstrap.yaml
