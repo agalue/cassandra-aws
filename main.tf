@@ -28,7 +28,7 @@ module "cassandra" {
 
 
 data "template_file" "opennms" {
-  template = file("${path.module}/opennms.tpl")
+  template = file("opennms.tpl")
 
   vars = {
     hostname                    = "opennms"

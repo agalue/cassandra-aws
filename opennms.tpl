@@ -96,7 +96,7 @@ fi
 cat <<EOF > $opennms_etc/resource-types.d/cassandra-keyspaces.xml
 <?xml version="1.0"?>
 <resource-types>
-  <resourceType name="cassKeyspace" label="Cassandra Keyspace" resourceLabel="${index}">
+  <resourceType name="cassKeyspace" label="Cassandra Keyspace" resourceLabel="$${index}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
       <parameter key="sibling-column-name" value="keyspace" />
