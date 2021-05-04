@@ -5,7 +5,7 @@
     name: 'cassandra3@{{ item.key }}'
     state: started
 
-- name: 'Wait for {{ item.value }} to join the cluster'
+- name: 'Wait for {{ item.key }}({{ item.value }}) to join the cluster'
   shell: 'set -o pipefail && nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
   changed_when: False
   register: result
