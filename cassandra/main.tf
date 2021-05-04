@@ -7,6 +7,7 @@ data "template_file" "cassandra" {
     snitch         = var.snitch
     datacenter     = var.datacenter
     rack           = var.rack
+    tokens         = var.tokens
     seed_name      = var.seed_name
     private_ips    = join(",", var.private_ips)
     heap_size      = var.heap_size
