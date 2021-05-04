@@ -7,6 +7,7 @@
   serial: 1
   tasks:
 
+  # TODO This should be skipped for node one (because it has datacenter1/rack1)
   - name: Rebuild Cassandra nodes in sequence
     loop: '{{ instances | dict2items }}'
     include_tasks: 'tasks-decommission-bootstrap.yaml'

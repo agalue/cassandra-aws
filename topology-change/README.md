@@ -1,5 +1,7 @@
 # Change Cluster Topology
 
+**THIS WAS A WRONG EXPERIMENT AND IT WON'T WORK**
+
 This [Ansible](https://www.ansible.com/) recipe helps with the tasks involved in changing the topology on a Cassandra cluster when switching the `endpoint_snitch` from `SimpleSnitch` to `GossipingPropertyFileSnitch`, updating the keyspaces that use`SimpleStrategy` to start using `NetworkTopologyStrategy`.
 
 This procedure assumes the cluster is healthy. If you're unsure, it is recommended to run a full repair prior to executing this operation, and I recommend doing it using [Cassandra Reaper](http://cassandra-reaper.io/).
