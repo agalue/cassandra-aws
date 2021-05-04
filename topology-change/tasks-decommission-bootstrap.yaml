@@ -1,9 +1,9 @@
 # @author agalue@opennms.com
 ---
-- name: 'Decomission Cassandra instance {{ item.key }}'
-  shell: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission > /tmp/decomission.finished'
+- name: 'Decommission Cassandra instance {{ item.key }} ({{ item.value }}); be patient, his can take a long time'
+  shell: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decommission > /tmp/decommission.finished'
   args:
-    creates: /tmp/decomission.finished
+    creates: /tmp/decommission.finished
 
 - name: 'Stop Cassandra instance {{ item.key }}'
   systemd:
@@ -63,12 +63,12 @@
     owner: cassandra
     group: cassandra
 
-- name: 'Start Cassandra instance {{ item.key }}'
+- name: 'Start Cassandra instance {{ item.key }} (joining the cluster as a new node)'
   service:
     name: 'cassandra3@{{ item.key }}'
     state: started
 
-- name: 'Wait for {{ item.key }}({{ item.value }}) to join the cluster'
+- name: 'Wait for {{ item.key }} ({{ item.value }}) to join the cluster; be patient, his can take a long time'
   shell: 'set -o pipefail && nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
   changed_when: False
   register: result
