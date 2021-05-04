@@ -56,6 +56,10 @@ variable "snitch" {
   type = string
 }
 
+variable "tokens" {
+  type = string
+}
+
 variable "datacenter" {
   type = string
 }

@@ -116,8 +116,10 @@ ssh -o ServerAliveInterval=10 -p 8101 admin@localhost
 * Execute the `opennms:stress-metrics` command. The following is an example to generate 100000 samples per second:
 
 ```bash
-opennms:stress-metrics -r 60 -n 15000 -f 20 -g 10 -a 10 -s 1 -t 200 -i 300
+opennms:stress-metrics -r 60 -n 15000 -f 20 -g 1 -a 100 -s 2 -t 100 -i 300
 ```
+
+  Keep in mind, you'd need a ring buffer of 2097152 and a cache size of about 600000 for the above command.
 
 * Check the OpenNMS performance graphs to understand how it behaves. Additionally, you could check the Monitoring Tab on the AWS Console for each EC2 instance.
 

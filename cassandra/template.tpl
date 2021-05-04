@@ -6,6 +6,7 @@
 hostname=${hostname}
 cluster_name=${cluster_name}
 snitch=${snitch}
+tokens=${tokens}
 datacenter=${datacenter}
 rack=${rack}
 seed_name=${seed_name}
@@ -138,11 +139,12 @@ do
   rsync -ar $conf_src/ $conf_dir/
 
   # Cassandra Configuration
-  sed -r -i "/cluster_name/s/Test Cluster/$cluster_name/" $conf_file
-  sed -r -i "/seeds/s/127.0.0.1/$seed_name/" $conf_file
-  sed -r -i "/listen_address/s/localhost/$ip/" $conf_file
-  sed -r -i "/rpc_address/s/localhost/$ip/" $conf_file
-  sed -r -i "/endpoint_snitch/s/SimpleSnitch/$snitch/" $conf_file
+  sed -r -i "/cluster_name:/s/Test Cluster/$cluster_name/" $conf_file
+  sed -r -i "/seeds:/s/127.0.0.1/$seed_name/" $conf_file
+  sed -r -i "/num_tokens:/s/256/$tokens/" $conf_file
+  sed -r -i "/listen_address:/s/localhost/$ip/" $conf_file
+  sed -r -i "/rpc_address:/s/localhost/$ip/" $conf_file
+  sed -r -i "/endpoint_snitch:/s/SimpleSnitch/$snitch/" $conf_file
   sed -r -i "s|hints_directory: .*|hints_directory: $data_dir/hints|" $conf_file
   sed -r -i "s|commitlog_directory: .*|commitlog_directory: $data_dir/commitlog|" $conf_file
   sed -r -i "s|saved_caches_directory: .*|saved_caches_directory: $data_dir/saved_caches|" $conf_file

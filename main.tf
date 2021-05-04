@@ -16,6 +16,7 @@ module "cassandra" {
   hostname            = each.key
   cluster_name        = var.settings.cassandra_cluster_name
   snitch              = var.settings.cassandra_snitch
+  tokens              = var.settings.cassandra_num_tokens
   datacenter          = var.settings.cassandra_datacenter_name
   rack                = each.key # Same as hostname
   seed_name           = var.settings.cassandra_seed

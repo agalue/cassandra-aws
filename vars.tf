@@ -84,7 +84,8 @@ variable "settings" {
     cassandra_cluster_name       = "Production"
     cassandra_datacenter_name    = "Main"
     cassandra_volume_size        = 200 # In GB
-    cassandra_instance_heap_size = 16384 # In MB
+    cassandra_num_tokens         = 256 # 16 recommended
+    cassandra_instance_heap_size = 24576 # In MB per instance
     cassandra_replication_factor = 3 # Should be less than total racks (or servers)
     cassandra_snitch             = "GossipingPropertyFileSnitch" # Do not change
 
@@ -96,11 +97,13 @@ variable "settings" {
 
     opennms_instance_type        = "m4.10xlarge"
     opennms_private_ip           = "172.17.1.100"
-    opennms_cache_max_entries    = 2000000
-    opennms_ring_buffer_size     = 4194304
     opennms_newts_ttl            = 31540000 # In Seconds
     opennms_newts_resource_shard = 604800 # In Seconds
     opennms_cache_use_redis      = false
+
+    # opennms:stress-metrics -r 60 -n 15000 -f 20 -g 1 -a 100 -s 2 -t 100 -i 300
+    opennms_cache_max_entries    = 1000000
+    opennms_ring_buffer_size     = 2097152
   }
 }
 
