@@ -8,38 +8,54 @@
     template:
       src: 'alter-keyspace.j2'
       dest: '/tmp/newts.cql'
+      mode: 0644
     vars:
       keyspace: newts
       replication_factor: 2 # Change it based on the final number of racks
+
   - name: Alter keyspace newts
-    command: 'cqlsh -f /tmp/newts.cql {{ ansible_host }}'
+    shell: 'cqlsh -f /tmp/newts.cql {{ ansible_host }} > /tmp/newts.updated'
+    args:
+      creates: /tmp/newts.updated
 
   - name: Copy CQL for system_auth
     template:
       src: 'alter-keyspace.j2'
       dest: '/tmp/system_auth.cql'
+      mode: 0644
     vars:
       keyspace: system_auth
       replication_factor: 1 # Based on current settings
+
   - name: Alter keyspace system_auth
-    command: 'cqlsh -f /tmp/system_auth.cql {{ ansible_host }}'
+    shell: 'cqlsh -f /tmp/system_auth.cql {{ ansible_host }} > /tmp/system_auth.updated'
+    args:
+      creates: /tmp/system_auth.updated
 
   - name: Copy CQL for system_distributed
     template:
       src: 'alter-keyspace.j2'
       dest: '/tmp/system_distributed.cql'
+      mode: 0644
     vars:
       keyspace: system_distributed
       replication_factor: 3 # Based on current settings
+
   - name: Alter keyspace system_distributed
-    command: 'cqlsh -f /tmp/system_distributed.cql {{ ansible_host }}'
+    shell: 'cqlsh -f /tmp/system_distributed.cql {{ ansible_host }} > /tmp/system_distributed.updated'
+    args:
+      creates: /tmp/system_distributed.updated
 
   - name: Copy CQL for system_traces
     template:
       src: 'alter-keyspace.j2'
       dest: '/tmp/system_traces.cql'
+      mode: 0644
     vars:
       keyspace: system_traces
       replication_factor: 1 # Based on current settings
+
   - name: Alter keyspace system_traces
-    command: 'cqlsh -f /tmp/system_traces.cql {{ ansible_host }}'
+    shell: 'cqlsh -f /tmp/system_traces.cql {{ ansible_host }} > /tmp/system_traces.updated'
+    args:
+      creates: /tmp/system_traces.updated

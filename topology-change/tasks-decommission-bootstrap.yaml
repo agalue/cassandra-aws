@@ -1,7 +1,9 @@
 # @author agalue@opennms.com
 ---
 - name: 'Decomission Cassandra instance {{ item.key }}'
-  command: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission'
+  shell: 'nodetool -u cassandra -pw cassandra -h {{ item.value }} decomission > /tmp/decomission.finished'
+  args:
+    creates: /tmp/decomission.finished
 
 - name: 'Stop Cassandra instance {{ item.key }}'
   systemd:
@@ -12,6 +14,9 @@
   template:
     src: cassandra-rackdc.j2
     dest: '/etc/cassandra/{{ item.key }}/cassandra-rackdc.properties'
+    mode: 0644
+    owner: cassandra
+    group: cassandra
 
 - name: 'Remove /var/lib/cassandra for {{ item.key }}'
   file:
@@ -21,6 +26,7 @@
 - name: 'Initialize /var/lib/cassandra for {{ item.key }}'
   file:
     state: directory
+    mode: 0755
     owner: cassandra
     group: cassandra
     path: '/var/lib/cassandra/{{ item.key }}'
@@ -28,6 +34,7 @@
 - name: 'Initialize /var/lib/cassandra/commitlog for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/commitlog'
+    mode: 0755
     state: directory
     owner: cassandra
     group: cassandra
@@ -35,6 +42,7 @@
 - name: 'Initialize /var/lib/cassandra/data for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/data'
+    mode: 0755
     state: directory
     owner: cassandra
     group: cassandra
@@ -42,6 +50,7 @@
 - name: 'Initialize /var/lib/cassandra/hints for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/hints'
+    mode: 0755
     state: directory
     owner: cassandra
     group: cassandra
@@ -49,6 +58,7 @@
 - name: 'Initialize /var/lib/cassandra/saved_caches for {{ item.key }}'
   file:
     path: '/var/lib/cassandra/{{ item.key }}/saved_caches'
+    mode: 0755
     state: directory
     owner: cassandra
     group: cassandra
@@ -59,7 +69,7 @@
     state: started
 
 - name: 'Wait for {{ item.value }} to join the cluster'
-  shell: 'nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
+  shell: 'set -o pipefail && nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
   changed_when: False
   register: result
   until: result.stdout is regex("^UN.*")

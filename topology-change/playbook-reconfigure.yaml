@@ -13,6 +13,20 @@
       replace: '\1 {{ ansible_processor_cores }}'
     loop: '{{ instances | dict2items }}'
 
+  - name: Set compaction_throughput_mb_per_sec
+    replace:
+      path: '/etc/cassandra/{{ item.key }}/cassandra.yaml'
+      regexp: '^.*(compaction_throughput_mb_per_sec:).*'
+      replace: '\1 {{ compaction_throughput }}'
+    loop: '{{ instances | dict2items }}'
+
+  - name: Set stream_throughput_outbound_megabits_per_sec
+    replace:
+      path: '/etc/cassandra/{{ item.key }}/cassandra.yaml'
+      regexp: '^.*(stream_throughput_outbound_megabits_per_sec:).*'
+      replace: '\1 {{ stream_throughput }}'
+    loop: '{{ instances | dict2items }}'
+
   - name: Update snitch
     replace:
       path: '/etc/cassandra/{{ item.key }}/cassandra.yaml'
@@ -24,6 +38,9 @@
     template:
       src: cassandra-rackdc-fixed.j2
       dest: '/etc/cassandra/{{ item.key }}/cassandra-rackdc.properties'
+      mode: 0644
+      owner: cassandra
+      group: cassandra
     loop: '{{ instances | dict2items }}'
 
   - name: Remove cassandra-topology.properties

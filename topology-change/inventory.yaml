@@ -14,6 +14,9 @@ all:
       hosts:
         172.17.1.21:
     cassandra:
+      vars:
+        compaction_throughput: 64
+        stream_throughput: 600
       hosts:
         172.17.1.21:
           rack: rack1

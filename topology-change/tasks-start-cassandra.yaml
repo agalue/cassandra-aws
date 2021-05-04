@@ -6,7 +6,7 @@
     state: started
 
 - name: 'Wait for {{ item.value }} to join the cluster'
-  shell: 'nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
+  shell: 'set -o pipefail && nodetool -u cassandra -pw cassandra status 2>/dev/null | grep {{ item.value }}'
   changed_when: False
   register: result
   until: result.stdout is regex("^UN.*")
