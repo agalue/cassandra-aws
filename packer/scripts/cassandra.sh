@@ -25,7 +25,9 @@ sudo yum install -y cassandra cassandra-tools
 
 echo  "### Downloading and installing Cassandra Reaper..."
 
-sudo wget https://bintray.com/thelastpickle/reaper-rpm/rpm -O /etc/yum.repos.d/bintray-thelastpickle-reaper-rpm.repo
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/thelastpickle/reaper/setup.rpm.sh' \
+  | sudo -E bash
 sudo yum install -y reaper
 
 echo  "### Creating reaper config using Cassandra as backend..."
