@@ -1,5 +1,7 @@
 # Cassandra in AWS
 
+**This repository is not maintained anymore, please use [this](https://github.com/agalue/cassandra-multi-instance) instead.**
+
 Ideally, it is recommended to have medium-size servers as Cassandra nodes rather than large or huge servers as Cassandra nodes.
 
 Unfortunately, we might get something different from what we expect when we request a set of servers to build a database cluster like this one, as probably the company already has established rules for the kind of hardware you'll get for a given role.
